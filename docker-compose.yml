@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:10
+    env_file:
+      - db.env
+    networks:
+      - db_network
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+
+  web:
+    build: .
+    volumes:
+      - .:/comixify
+      - static_volume:/comixify/static
+      - media_volume:/comixify/media
+    networks:
+      - nginx_network
+      - db_network
+    depends_on:
+      - db
+    env_file:
+      - backend.env
+    tty: true
+
+  nginx:
+    image: nginx:1.13
+    ports:
+      - 8080:8080
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/comixify/static
+      - media_volume:/comixify/media
+    depends_on:
+      - web
+    networks:
+      - nginx_network
+
+networks:
+  nginx_network:
+    driver: bridge
+  db_network:
+    driver: bridge
+
+volumes:
+  db_volume:
+  static_volume:
+  media_volume:
