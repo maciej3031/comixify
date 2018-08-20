@@ -20,16 +20,18 @@ class Comixify(APIView):
         serializer = VideoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        video_file = serializer.validated_data['file']
+        video_file = serializer.validated_data["file"]
+        video = Video.objects.create(file=video_file)
 
-        keyframes = KeyFramesExtractor.get_keyframes(video=video_file)
+        keyframes = KeyFramesExtractor.get_keyframes(video=video)
         stylized_keyframes = StyleTransfer.get_stylized_frames(frames=keyframes)
         comic_image = LayoutGenerator.get_layout(frames=stylized_keyframes)
 
-        video = Video.objects.create(file=video_file)
         comic = Comic.create_from_nparray(comic_image, video)
         response = {
-            'status_message': 'ok',
-            'comic': comic.file.url,
+            "status_message": "ok",
+            "comic": comic.file.url,
         }
+        # Remove to spare storage
+        video.file.delete()
         return Response(response)
