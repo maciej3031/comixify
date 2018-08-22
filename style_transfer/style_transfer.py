@@ -18,7 +18,7 @@ class StyleTransfer():
 
     @staticmethod
     def _cartoon_gan_stylize(frames, gpu=True, **kwargs):
-        style = kwargs.get("style", "Hosoda")
+        style = kwargs.get("style", "Hayao")
         resize = kwargs.get("resize", 450)
 
         # load pretrained model
@@ -38,10 +38,7 @@ class StyleTransfer():
             else:
                 w = resize
                 h = int(w * ratio)
-            input_image = cv2.resize(img, (w, h), interpolation=cv2.INTER_CUBIC)
-
-            # RGB -> BGR
-            input_image = input_image[:, :, [2, 1, 0]]
+            input_image = cv2.resize(img, (w, h))
             input_image = transforms.ToTensor()(input_image).unsqueeze(0)
 
             # preprocess, (-1, 1)
@@ -52,13 +49,13 @@ class StyleTransfer():
             output_image = model(input_image)
             output_image = output_image[0]
 
-            # BGR -> RGB
-            output_image = output_image[[2, 1, 0], :, :]
-
             # deprocess, (0, 1)
-            output_image = output_image.data.cpu().float() * 0.5 + 0.5
+            output_image = (output_image.data.cpu().float() * 0.5 + 0.5).numpy()
 
-            # switch channels and append image to result images
-            stylized_imgs.append(np.rollaxis(output_image.numpy(), 0, 3))
+            # switch channels -> (c, h, w) -> (h, w, c)
+            output_image = np.rollaxis(output_image, 0, 3)
+
+            # append image to result images
+            stylized_imgs.append(output_image)
 
         return stylized_imgs

@@ -39,10 +39,9 @@ class KeyFramesExtractor():
     @staticmethod
     def _get_frames_with_interval(interval, all_keyframes):
         chosen_frames = []
-        chosen_frames_tmp_dir = uuid.uuid4()
-        os.mkdir(jj(f"{settings.TMP_DIR}", f"{chosen_frames_tmp_dir}"))
 
         for i in range(settings.NUMBERS_OF_FRAMES_TO_SHOW):
             frame = cv2.imread(all_keyframes[(i + 1) * interval])
             chosen_frames.append(frame)
+
         return chosen_frames

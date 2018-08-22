@@ -18,9 +18,9 @@ class Comic(models.Model):
 
     @classmethod
     def create_from_nparray(cls, nparray_file, video):
+        if nparray_file.max() <= 1:
+            nparray_file = (nparray_file * 255).astype(int)
         tmp_name = uuid.uuid4()
-        if not os.path.exists(f"{settings.TMP_DIR}"):
-            os.makedirs(f"{settings.TMP_DIR}")
         cv2.imwrite(f"{settings.TMP_DIR}{tmp_name}.png", nparray_file)
         with open(f"{settings.TMP_DIR}{tmp_name}.png", mode="rb") as tmp_file:
             comic_image = File(tmp_file, name=f"{tmp_name}.png")
