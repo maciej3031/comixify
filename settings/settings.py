@@ -25,7 +25,7 @@ SECRET_KEY = 'secret_123'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['35.237.219.127']
+ALLOWED_HOSTS = ['35.241.250.34', 'comixify.ii.pw.edu.pl']
 
 
 # Application definition
