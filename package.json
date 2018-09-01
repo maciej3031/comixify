@@ -6,8 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config ./frontend/client/webpack.config.js",
-    "build:watch": "webpack --config ./frontend/client/webpack.config.js --watch",
-    "build:prod": "NODE_ENV=production webpack --config ./frontend/client/webpack.config.js --watch"
+    "build:watch":
+      "webpack --config ./frontend/client/webpack.config.js --watch",
+    "build:prod":
+      "NODE_ENV=production webpack --config ./frontend/client/webpack.config.js"
   },
   "repository": {
     "type": "git",

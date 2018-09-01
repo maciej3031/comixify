@@ -1,0 +1,58 @@
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	color: #222;
+	background: #eee;
+}
+
+.wrap {
+	padding: 1rem;
+	margin: 2rem auto 0 auto;
+	max-width: 700px;
+	background: white;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+	border: 1px solid rgba(0, 0, 0, 0.09);
+	border-radius: 3px;
+	box-sizing: border-box;
+}
+
+img {
+	width: 100%;
+}
+
+.bar-loader {
+	margin: 0 auto;
+}
+
+.dropzone {
+	padding: 1rem;
+	height: 10rem;
+	border: 2px dashed gray;
+}
+
+.dropzone--rejected {
+	border-style: solid;
+	border-color: #c66;
+	background-color: #eee;
+}
+
+.dropzone--disabled {
+	opacity: 0.5;
+}
+
+.dropzone--accepted {
+	border-style: solid;
+	border-color: #6c6;
+	background-color: #eee;
+}
+
+@media all and (max-width: 700px) {
+	.wrap {
+		margin-top: 0;
+		border-radius: 0;
+	}
+}
