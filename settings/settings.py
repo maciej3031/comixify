@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'api',
     'style_transfer',
     'comic_layout',
+    'frontend',
 ]
 
 MIDDLEWARE = [
