@@ -21,6 +21,7 @@ class StyleTransfer():
         style = kwargs.get("style", "Hayao")
         resize = kwargs.get("resize", 450)
 
+        # TODO: We should load model to memory right after deployment, not on each request.
         # load pretrained model
         model = Transformer()
         model.load_state_dict(torch.load(os.path.join("CartoonGAN/pretrained_model", style + "_net_G_float.pth")))
