@@ -5,7 +5,7 @@ import Dropzone from "react-dropzone";
 import { BarLoader } from "react-spinners";
 import { css } from "react-emotion";
 
-const COMIXIFY_API = "/comixify";
+const COMIXIFY_API = "/comixify/";
 const MAX_FILE_SIZE = 50000000;
 const PERMITTED_VIDEO_EXTENSIONS = "video/*";
 
