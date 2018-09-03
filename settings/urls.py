@@ -23,6 +23,7 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'comixify/', include('api.urls')),
+    path(r'', include('frontend.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
