@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import torchvision.transforms as transforms
 from django.conf import settings
+from django.core.cache import cache
 from torch.autograd import Variable
 
 from CartoonGAN.network.Transformer import Transformer
@@ -21,12 +22,16 @@ class StyleTransfer():
         style = kwargs.get("style", "Hayao")
         resize = kwargs.get("resize", 450)
 
-        # TODO: We should load model to memory right after deployment, not on each request.
-        # load pretrained model
-        model = Transformer()
-        model.load_state_dict(torch.load(os.path.join("CartoonGAN/pretrained_model", style + "_net_G_float.pth")))
-        model.eval()
-        model.cuda() if gpu else model.float()
+        model_cache_key = 'model_cache'
+        model = cache.get(model_cache_key)  # get model from cache
+
+        if model is None:
+            # load pretrained model
+            model = Transformer()
+            model.load_state_dict(torch.load(os.path.join("CartoonGAN/pretrained_model", style + "_net_G_float.pth")))
+            model.eval()
+            model.cuda() if gpu else model.float()
+            cache.set(model_cache_key, model, None)  # None is the timeout parameter. It means cache forever
 
         stylized_imgs = []
         for img in frames:

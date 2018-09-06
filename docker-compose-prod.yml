@@ -23,7 +23,7 @@ services:
     depends_on:
       - db
     environment:
-      - DEBUG=true
+      - DEBUG=false
       - PYTHONUNBUFFERED=1
     tty: true
 
