@@ -9,7 +9,76 @@
 </head>
 <body>
 
-<div id="root"></div>
+
+<div class="wrap">
+	<div class="section">
+		<h1>Comixify</h1>
+		<div class="authors">
+			<div>
+				Author 1
+			</div>
+			<div>
+				Author 2
+			</div>
+			<div>
+				Author 3
+			</div>
+			<div>
+				Author 4
+			</div>
+		</div>
+		<div>
+			<h3>Abstract</h3>
+			<div>
+				Lorem ipsum eiusmod esse laboris tempor laboris aliquip laborum anim enim reprehenderit consequat sed mollit eiusmod dolore qui duis exercitation adipisicing exercitation in. Sint in occaecat ut incididunt eiusmod consectetur sint quis dolore nostrud laboris sit ut in aute. Ex non dolore ut ullamco ut ea ad dolore. Lorem ipsum cupidatat occaecat veniam consectetur sunt in id incididunt esse. Elit non deserunt laborum anim dolor ut cillum reprehenderit anim veniam incididunt ea aute commodo in dolor. Elit esse nisi anim duis sunt tempor pariatur anim et laborum laborum aute in excepteur cupidatat duis veniam. Voluptate labore ad consectetur ut amet dolor nisi eiusmod consectetur sit in. Laborum in excepteur dolore dolore nulla mollit cillum occaecat ut pariatur non.
+			</div>
+		</div>
+	</div>
+	<div class="section">
+		<h3>Demo</h3>
+		<div id="demo"></div>
+	</div>
+	<div class="section">
+		<h3>API</h3>
+		<div>
+			<h4>Request:</h4>
+			<p>
+				<i>Path:</i>
+				<a href="http://comixify.ii.pw.edu.pl/comixify/">http://comixify.ii.pw.edu.pl/comixify/</a>
+			</p>
+			<p><i>Method:</i> <strong>POST</strong></p>
+			<p><i>Data:</i> 
+			<br>
+			<code>
+			{
+				<br>
+				&emsp;&emsp;&emsp;&emsp;file: video/mp4
+				<br>
+			}
+			</code>
+			</p>
+
+			<i>* Max size of video is 50 MB</i>
+
+			<h4>Respose:</h4>
+			<code>
+			{
+				<br>
+				&emsp;&emsp;&emsp;&emsp;status: string,<br>
+				&emsp;&emsp;&emsp;&emsp;comic: string
+				<br>
+			}
+			</code>
+			<p>comic - url to result comics</p>
+		</div>
+	</div>
+	<div class="section">
+		<h3>Acknowledgements</h3>
+		<div>
+			We would like to thank Google for giving us free credits for Google Cloud.
+		</div>
+	</div>
+</div>
 <script type="text/javascript" src="{% static 'frontend/js/app.client.js' %}"></script>
 
 </body>
