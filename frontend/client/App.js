@@ -5,9 +5,11 @@ import Dropzone from "react-dropzone";
 import { BarLoader } from "react-spinners";
 import { css } from "react-emotion";
 
-const COMIXIFY_API = "/comixify/";
-const MAX_FILE_SIZE = 50000000;
-const PERMITTED_VIDEO_EXTENSIONS = "video/*";
+import {
+	COMIXIFY_API,
+	MAX_FILE_SIZE,
+	PERMITTED_VIDEO_EXTENSIONS
+} from "./constants";
 
 class App extends React.Component {
 	static appStates = {
@@ -83,8 +85,7 @@ class App extends React.Component {
 			App.appStates.FINISHED
 		].includes(state);
 		return (
-			<div className="wrap">
-				<h1>Comixify</h1>
+			<div>
 				{state === App.appStates.FINISHED && [
 					<img key="1" src={result_comics} />,
 					<p key="2">Go again:</p>
@@ -122,4 +123,4 @@ class App extends React.Component {
 	}
 }
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("demo"));

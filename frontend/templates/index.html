@@ -9,7 +9,76 @@
 </head>
 <body>
 
-<div id="root"></div>
+
+<div class="wrap">
+	<div class="section">
+		<h1>Comixify</h1>
+		<div class="authors">
+			<div>
+				Maciej Pęśko
+			</div>
+			<div>
+				Adam Svystun
+			</div>
+			<div>
+				Paweł Andruszkiewicz
+			</div>
+			<div>
+				Tomasz Trzciński
+			</div>
+		</div>
+		<div>
+			<h3>Abstract</h3>
+			<div>
+      Many recent works in the field of Neural Style Transfer showed that producing an image in the style of another image is possible. There are various possible applications to use such techniques like paintings style transfer or photo-realistic style transfer. In our project, we present end-to-end solution that transforms input video into a comic in just a few seconds. Our work consists of two main parts: keyframes extraction and comic style transfer. In the near future we would like to introduce next two parts: Comic Grid Layout Generation and Speech Extraction.
+			</div>
+		</div>
+	</div>
+	<div class="section">
+		<h3>Demo</h3>
+		<div id="demo"></div>
+	</div>
+	<div class="section">
+		<h3>API</h3>
+		<div>
+			<h4>Request:</h4>
+			<p>
+				<i>Path:</i>
+				<a href="http://comixify.ii.pw.edu.pl/comixify/">http://comixify.ii.pw.edu.pl/comixify/</a>
+			</p>
+			<p><i>Method:</i> <strong>POST</strong></p>
+			<p><i>Data:</i> 
+			<br>
+			<code>
+			{
+				<br>
+				&emsp;&emsp;&emsp;&emsp;file: video/mp4
+				<br>
+			}
+			</code>
+			</p>
+
+			<i>* Max size of video is 50 MB</i>
+
+			<h4>Respose:</h4>
+			<code>
+			{
+				<br>
+				&emsp;&emsp;&emsp;&emsp;status: string,<br>
+				&emsp;&emsp;&emsp;&emsp;comic: string
+				<br>
+			}
+			</code>
+			<p>comic - url to result comics</p>
+		</div>
+	</div>
+	<div class="section">
+		<h3>Acknowledgements</h3>
+		<div>
+      We would like to thank Google for granting us free Google Cloud Platform credits that enabled us to develop our project.
+		</div>
+	</div>
+</div>
 <script type="text/javascript" src="{% static 'frontend/js/app.client.js' %}"></script>
 
 </body>
