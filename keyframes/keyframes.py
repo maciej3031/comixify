@@ -17,7 +17,7 @@ from math import ceil, floor
 from utils import jj
 from keyframes_rl.models import DSN
 from keyframes_rl.knapsack import knapsack_dp
-from keyframes.kts import cpd_auto
+from keyframes.kts import cpd_nonlin, cpd_auto
 
 class KeyFramesExtractor():
     @classmethod
@@ -25,9 +25,9 @@ class KeyFramesExtractor():
         frames_paths, all_frames_tmp_dir = cls._get_all_frames(video)
         frames = cls._get_frames(frames_paths)
         features = cls._get_features(frames, gpu)
-        segments = cls._get_segments(features)
+        change_points, frames_per_segment = cls._get_segments(features)
         probs = cls._get_probs(features, gpu)
-        chosen_frames = cls._get_chosen_frames(frames, probs)
+        chosen_frames = cls._get_chosen_frames(frames, probs, change_points, frames_per_segment)
         return chosen_frames
 
     @staticmethod
@@ -94,8 +94,12 @@ class KeyFramesExtractor():
         
     @staticmethod
     def _get_probs(features, gpu=True):
+        model_path = "keyframes_rl/pretrained_model/model_epoch60.pth.tar"
         model = DSN(in_dim=1024, hid_dim=256, num_layers=1, cell="lstm")
-        checkpoint = torch.load("keyframes_rl/pretrained_model/summe1.pth.tar")
+        if gpu:
+            checkpoint = torch.load(model_path)
+        else:
+            checkpoint = torch.load(model_path, map_location='cpu')
         model.load_state_dict(checkpoint)
         if gpu:
             model = nn.DataParallel(model).cuda()
@@ -107,26 +111,40 @@ class KeyFramesExtractor():
         return probs
 
     @staticmethod
-    def _get_chosen_frames(frames, probs, segments):
-        n_frames = len(frames)
-        frames_per_segment = [int(segments[0])]
-        for j in range(0, len(segments) - 1):
-            frames_per_segment.append(int(segments[j + 1] - segments[j]))
-        frames_per_segment.append(int(n_frames - segments[len(segments) - 1]))
+    def _get_chosen_frames(frames, probs, change_points, frames_per_segment):
+        gts = []
+        s = 0
+        for q in frames_per_segment:
+            gts.append(np.mean(probs[s:s + q]).astype(float))
+            s += q
+        n_frames = len(gts)
         capacity = int(int(n_frames) * 0.55)
-        picks = knapsack_dp(probs, frames_per_segment, n_frames, capacity)
+        picks = knapsack_dp(gts, frames_per_segment, n_frames, capacity)
         chosen_frames = []
         for pick in picks:
-            cp = segments[pick]
+            cp = change_points[pick]
             low = cp[0]
             high = cp[1]
-            x = low + np.argmax(gtscore[low:high])
+            x = low
+            if low != high:
+                x = low + np.argmax(probs[low:high])
             chosen_frames.append(frames[x])
         return chosen_frames
 
     @staticmethod
     def _get_segments(features):
         K = np.dot(features, features.T)
-        cps, scores = cpd_auto(K, math.ceil(K.shape[0] / 10), 1)
-        return cps
+        min_segments = ceil(K.shape[0] / 10)
+        min_segments = max(3, min_segments)
+        cps, scores = cpd_auto(K, min_segments, 1)
+        change_points = [
+            [0, cps[0] - 1]
+        ]
+        frames_per_segment = [int(cps[0])]
+        for j in range(0, len(cps) - 1):
+            change_points.append([cps[j], cps[j + 1] - 1])
+            frames_per_segment.append(int(cps[j+1] - cps[j]))
+        frames_per_segment.append(int(len(features) - cps[len(cps) - 1]))
+        change_points.append([cps[len(cps) - 1], len(features) - 1])
+        return change_points, frames_per_segment
     

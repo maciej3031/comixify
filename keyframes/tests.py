@@ -8,12 +8,15 @@ import shutil
 from utils import jj
 from django.conf import settings
 
+VIDEO_PATH = "tmp/f1_short.mp4" 
+VIDEO_N_FRAMES = 47 
+
+
 
 class KeyframesTestCase(TestCase):
 
     def setUp(self):
-        video_file = "tmp/f1.mp4"
-        f = open(video_file, 'rb')
+        f = open(VIDEO_PATH, 'rb')
         self.video = Video.objects.create(file=File(f))
 
     def tearDown(self):
@@ -21,20 +24,35 @@ class KeyframesTestCase(TestCase):
 
     def test_keyframes(self):
         """Keyframes are extracted corectly"""
-        
+
         frames_paths, all_frames_tmp_dir = KeyFramesExtractor._get_all_frames(self.video)
         self.assertIsInstance(frames_paths[0], str)
-        self.assertEqual(len(frames_paths), 193)
+        self.assertEqual(len(frames_paths), VIDEO_N_FRAMES)
         self.all_frames_tmp_dir = all_frames_tmp_dir
 
         frames = KeyFramesExtractor._get_frames(frames_paths)
-        self.assertEqual(len(frames), 193)
+        self.assertEqual(len(frames), VIDEO_N_FRAMES)
         self.assertIsInstance(frames[0], np.ndarray)
 
-        # features = KeyFramesExtractor._get_features(frames, False)
-        # segments = KeyFramesExtractor._get_segments(features)
-        # probs = KeyFramesExtractor._get_probs(features, False)
-        # chosen_frames = KeyFramesExtractor._get_chosen_frames(frames, probs)
+        features = KeyFramesExtractor._get_features(frames, False)
+        self.assertIsInstance(features, np.ndarray)
+        self.assertEqual(features.shape, (VIDEO_N_FRAMES, 1024))
 
+        change_points, frames_per_segment = KeyFramesExtractor._get_segments(features)
+        self.assertIsInstance(change_points, list)
+        self.assertIsInstance(frames_per_segment, list)
+
+        for cp in frames_per_segment:
+            with self.subTest(cp=cp):
+                self.assertIsInstance(cp, int)
+
+        probs = KeyFramesExtractor._get_probs(features, False)
+        self.assertIsInstance(probs, np.ndarray)
+        self.assertEqual(probs.shape, (VIDEO_N_FRAMES, ))
+
+        chosen_frames = KeyFramesExtractor._get_chosen_frames(frames, probs, change_points, frames_per_segment)
+        self.assertIsInstance(chosen_frames, list)
+        self.assertTrue(len(chosen_frames) > 0)
+        self.assertTrue(len(chosen_frames) <= len(frames_per_segment))
 
     
