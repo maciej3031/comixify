@@ -117,7 +117,7 @@ def cpd_nonlin(K, ncp, lmin=1, lmax=100000, backtrack=True, verbose=True,
     scores[scores > 1e99] = np.inf
     return cps, scores
 
-def cpd_auto(K, ncp, vmax, desc_rate=1, min_segments=3, **kwargs):
+def cpd_auto(K, ncp, vmax, desc_rate=1, min_segments=10, **kwargs):
     """Main interface
     Detect change points automatically selecting their number
         K       - kernel between each pair of frames in video
@@ -151,9 +151,8 @@ def cpd_auto(K, ncp, vmax, desc_rate=1, min_segments=3, **kwargs):
 
     costs = scores/float(N) + penalties
     m_best = np.argmin(costs)
-    print(m_best)
+    print(m_best, min_segments)
     m_best = max(min_segments, m_best)
-    print(m_best)
     (cps, scores2) = cpd_nonlin(K, m_best, **kwargs)
 
     return (cps, scores2)

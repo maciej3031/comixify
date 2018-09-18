@@ -46,7 +46,7 @@ class KeyFramesExtractor():
     def _get_frames(frames_paths):
         frames = []
         for frame_path in frames_paths:
-            frame = cv2.imread(frame_path)
+            frame = caffe.io.load_image(frame_path)
             frames.append(frame)
         return frames
 
@@ -86,7 +86,7 @@ class KeyFramesExtractor():
             net.forward()
             # features from pool5 layer
             temp = net.blobs["pool5/7x7_s1"].data[0] 
-            temp = temp.squeeze()
+            temp = temp.squeeze().copy()
             temp *= 0.03661728635813100419730620095037 # temprorary normalisation constant
             features.append(temp)
         features = np.array(features)
@@ -111,15 +111,14 @@ class KeyFramesExtractor():
         return probs
 
     @staticmethod
-    def _get_chosen_frames(frames, probs, change_points, frames_per_segment):
+    def _get_chosen_frames(frames, probs, change_points, frames_per_segment, min_keyframes=10):
         gts = []
         s = 0
         for q in frames_per_segment:
             gts.append(np.mean(probs[s:s + q]).astype(float))
             s += q
-        n_frames = len(gts)
-        capacity = int(int(n_frames) * 0.55)
-        picks = knapsack_dp(gts, frames_per_segment, n_frames, capacity)
+        gts = np.array(gts)
+        picks = np.argsort(gts)[::-1][:min_keyframes]
         chosen_frames = []
         for pick in picks:
             cp = change_points[pick]
@@ -135,7 +134,7 @@ class KeyFramesExtractor():
     def _get_segments(features):
         K = np.dot(features, features.T)
         min_segments = ceil(K.shape[0] / 10)
-        min_segments = max(3, min_segments)
+        min_segments = max(10, min_segments)
         cps, scores = cpd_auto(K, min_segments, 1)
         change_points = [
             [0, cps[0] - 1]

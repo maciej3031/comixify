@@ -52,7 +52,6 @@ class KeyframesTestCase(TestCase):
 
         chosen_frames = KeyFramesExtractor._get_chosen_frames(frames, probs, change_points, frames_per_segment)
         self.assertIsInstance(chosen_frames, list)
-        self.assertTrue(len(chosen_frames) > 0)
-        self.assertTrue(len(chosen_frames) <= len(frames_per_segment))
+        self.assertTrue(len(chosen_frames) == 10)
 
     
