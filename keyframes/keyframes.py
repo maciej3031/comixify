@@ -127,7 +127,12 @@ class KeyFramesExtractor():
             x = low
             if low != high:
                 x = low + np.argmax(probs[low:high])
-            chosen_frames.append(frames[x])
+            chosen_frames.append({
+                "index": x,
+                "frame": frames[x]
+            })
+        chosen_frames.sort(key=lambda k: k['index'])
+        chosen_frames = [o["frame"] for o in chosen_frames]
         return chosen_frames
 
     @staticmethod
