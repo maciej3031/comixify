@@ -12,7 +12,6 @@ VIDEO_PATH = "tmp/f1_short.mp4"
 VIDEO_N_FRAMES = 47 
 
 
-
 class KeyframesTestCase(TestCase):
 
     def setUp(self):

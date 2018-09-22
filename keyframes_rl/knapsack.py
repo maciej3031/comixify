@@ -45,11 +45,3 @@ def check_inputs(values,weights,n_items,capacity):
     assert(all(val >= 0 for val in weights))
     assert(n_items > 0)
     assert(capacity > 0)
-
-if __name__ == '__main__':
-    values = [2,3,4]
-    weights = [1,2,3]
-    n_items = 3
-    capacity = 3
-    picks = knapsack_dp(values,weights,n_items,capacity)
-    print(picks)
