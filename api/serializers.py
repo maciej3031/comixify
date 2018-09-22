@@ -17,3 +17,7 @@ class VideoSerializer(serializers.ModelSerializer):
         if file.size > settings.MAX_FILE_SIZE:
             raise TooLargeFile
         return attrs
+
+
+class YouTubeDownloadSerializer(serializers.Serializer):
+    url = serializers.URLField()
