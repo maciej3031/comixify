@@ -89,8 +89,6 @@ DATABASES = {
         'CONN_MAX_AGE': 60,
     }
 }
-if 'test' in sys.argv:
-    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

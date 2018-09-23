@@ -1,8 +1,8 @@
-import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
 __all__ = ['DSN']
+
 
 class DSN(nn.Module):
     """Deep Summarization Network"""
