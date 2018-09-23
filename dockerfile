@@ -28,6 +28,7 @@ ENV CLONE_TAG=1.0
 RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git . && \
     cd python && for req in $(cat requirements.txt) pydot; do python3.6 -m pip install $req; done && cd .. && \
     git clone https://github.com/NVIDIA/nccl.git && cd nccl && make -j install && cd .. && rm -rf nccl && \
+    cp /comixify/Cuda.cmake ./cmake/Cuda.cmake && \
     mkdir build && cd build && \
     cmake -DUSE_CUDNN=1 -DUSE_NCCL=1 .. && \
     make -j"$(nproc)"
