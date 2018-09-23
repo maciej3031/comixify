@@ -42,5 +42,6 @@ RUN python3.6 $CAFFE_ROOT/scripts/download_model_binary.py $CAFFE_ROOT/models/bv
 # Port to expose
 EXPOSE 8008
 
+WORKDIR /comixify
 ENTRYPOINT ["sh", "entrypoint.sh"]
 CMD ['start']
