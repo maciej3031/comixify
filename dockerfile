@@ -39,7 +39,7 @@ ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
 RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 RUN python3.6 $CAFFE_ROOT/scripts/download_model_binary.py $CAFFE_ROOT/models/bvlc_googlenet
 
-RUN python3.6 pip install markdown=="2.6.11"
+RUN python3.6 -m pip install markdown=="2.6.11"
 
 # Port to expose
 EXPOSE 8008
