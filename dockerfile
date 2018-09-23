@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y apt-utils software-properties-common &&
     python3.6 -m pip install --upgrade pip && \
     python3.6 -m pip install jupyter ipywidgets jupyterlab && \
     python3.6 -m pip install tensorflow-gpu h5py keras && \
-    python3.6 -m pip install scikit-image opencv-contrib-python
+    python3.6 -m pip install scikit-image opencv-contrib-python pyyaml
 
 RUN mkdir /comixify
 WORKDIR /comixify
