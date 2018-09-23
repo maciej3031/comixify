@@ -28,7 +28,7 @@ ENV CLONE_TAG=rc5
 RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git .
 RUN cp /comixify/Makefile.config ./Makefile.config
 RUN cd python && for req in $(cat requirements.txt) pydot; do python3.6 -m pip install $req; done && cd .. 
-RUN sed -i '415s/.*/NVCCFLAGS += -D_FORCE_INLINES -ccbin=$(CXX) -Xcompiler -fPIC $(COMMON_FLAGS)/' file.txt
+RUN sed -i '415s/.*/NVCCFLAGS += -D_FORCE_INLINES -ccbin=$(CXX) -Xcompiler -fPIC $(COMMON_FLAGS)/' Makefile
 RUN echo "# ---[ Includes" >> CMakeLists.txt
 RUN echo "set(${CMAKE_CXX_FLAGS} "-D_FORCE_INLINES ${CMAKE_CXX_FLAGS}")" >> CMakeLists.txt
 RUN make all -j"$(nproc)"
