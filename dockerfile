@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.0-cudnn7-runtime
+FROM nvidia/cuda:9.0-cudnn7-devel
 
 RUN apt-get update && apt-get install -y apt-utils software-properties-common && \
     add-apt-repository ppa:jonathonf/python-3.6 && \
