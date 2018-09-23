@@ -23,15 +23,16 @@ RUN python3.6 -m pip install -r requirements.txt
 ENV CAFFE_ROOT=/opt/caffe
 WORKDIR $CAFFE_ROOT
 
-ENV CLONE_TAG=1.0
+ENV CLONE_TAG=rc5
 
-RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git . && \
-    cd python && for req in $(cat requirements.txt) pydot; do python3.6 -m pip install $req; done && cd .. && \
-    git clone https://github.com/NVIDIA/nccl.git && cd nccl && make -j install && cd .. && rm -rf nccl && \
-    cp /comixify/Cuda.cmake ./cmake/Cuda.cmake && \
-    mkdir build && cd build && \
-    cmake -DUSE_CUDNN=1 -DUSE_NCCL=1 .. && \
-    make -j"$(nproc)"
+RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git .
+RUN cp /comixify/Makefile.config ./Makefile.config
+RUN cd python && for req in $(cat requirements.txt) pydot; do python3.6 -m pip install $req; done && cd .. 
+RUN sed -i '415s/.*/NVCCFLAGS += -D_FORCE_INLINES -ccbin=$(CXX) -Xcompiler -fPIC $(COMMON_FLAGS)/' file.txt
+RUN echo "# ---[ Includes" >> CMakeLists.txt
+RUN echo "set(${CMAKE_CXX_FLAGS} "-D_FORCE_INLINES ${CMAKE_CXX_FLAGS}")" >> CMakeLists.txt
+RUN make all -j"$(nproc)"
+RUN make distribute
 
 ENV PYCAFFE_ROOT $CAFFE_ROOT/python
 ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
