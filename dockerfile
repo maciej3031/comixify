@@ -32,6 +32,8 @@ RUN sed -i '415s/.*/NVCCFLAGS += -D_FORCE_INLINES -ccbin=$(CXX) -Xcompiler -fPIC
 RUN echo "# ---[ Includes" >> CMakeLists.txt
 RUN echo "set(${CMAKE_CXX_FLAGS} "-D_FORCE_INLINES ${CMAKE_CXX_FLAGS}")" >> CMakeLists.txt
 RUN cp /comixify/cudnn.hpp ./include/caffe/util/
+RUN ls -la /usr/lib/x86_64-linux-gnu
+RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python-py36.so /usr/lib/x86_64-linux-gnu/libboost_python3.so 
 RUN make all -j"$(nproc)"
 RUN make distribute
 
