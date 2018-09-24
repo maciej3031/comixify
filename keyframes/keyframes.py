@@ -11,6 +11,7 @@ from math import ceil
 from utils import jj
 from keyframes_rl.models import DSN
 from keyframes.kts import cpd_auto
+from sklearn.preprocessing import normalize
 
 
 class KeyFramesExtractor:
@@ -77,6 +78,7 @@ class KeyFramesExtractor:
             temp = temp.squeeze().copy()
             features.append(temp)
         features = np.array(features)
+        features = normalize(features)
         return features
         
     @staticmethod
