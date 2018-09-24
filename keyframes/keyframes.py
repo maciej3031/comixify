@@ -61,7 +61,7 @@ class KeyFramesExtractor:
         net = caffe.Net(model_file, pretrained, caffe.TEST)
         net.blobs["data"].reshape(1, 3, 224, 224)
 
-        mu = np.load(caffe_root + "python/caffe/imagenet/ilsvrc_2012_mean.npy")
+        mu = np.load(caffe_root + "/python/caffe/imagenet/ilsvrc_2012_mean.npy")
         mu = mu.mean(1).mean(1)
         transformer = caffe.io.Transformer({"data": net.blobs["data"].data.shape})
         transformer.set_transpose("data", (2, 0, 1))
