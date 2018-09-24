@@ -51,8 +51,8 @@ class KeyFramesExtractor:
         if not caffe_root:
             print("Caffe root path not found.")
 
-        model_file = caffe_root + "models/bvlc_googlenet/deploy.prototxt"
-        pretrained = caffe_root + "models/bvlc_googlenet/bvlc_googlenet.caffemodel"
+        model_file = caffe_root + "/models/bvlc_googlenet/deploy.prototxt"
+        pretrained = caffe_root + "/models/bvlc_googlenet/bvlc_googlenet.caffemodel"
 
         if not os.path.isfile(pretrained):
             print("PRETRAINED Model not found.")
