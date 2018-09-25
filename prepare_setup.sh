@@ -96,3 +96,7 @@ sudo docker-compose up -d
 
 # ASSURE THAT PORT 80 is open
 sudo iptables -w -A INPUT -p tcp --dport 80 -j ACCEPT
+
+# GET CERTIFICATES (SECOND COMMAND SHOULD BE RUN AFTER IAMGES ARE BUILD AND CONTAINERS RUN)
+sudo mkdir /etc/certs-data/
+sudo certbot certonly --webroot -w /etc/certs-data/ -d comixify.ii.pw.edu.pl
