@@ -1,25 +1,26 @@
 import os
-from subprocess import call
 import uuid
 import numpy as np
 import torch
 import torch.nn as nn
-from django.conf import settings
 import caffe
+from subprocess import call
 from math import ceil
+from django.conf import settings
+from sklearn.preprocessing import normalize
 
 from utils import jj
 from keyframes_rl.models import DSN
 from keyframes.kts import cpd_auto
-from sklearn.preprocessing import normalize
+from keyframes.utils import batch
 
 
 class KeyFramesExtractor:
     @classmethod
-    def get_keyframes(cls, video, gpu=settings.GPU):
+    def get_keyframes(cls, video, gpu=settings.GPU, features_batch_size=settings.FEATURE_BATCH_SIZE):
         frames_paths, all_frames_tmp_dir = cls._get_all_frames(video)
         frames = cls._get_frames(frames_paths)
-        features = cls._get_features(frames, gpu)
+        features = cls._get_features(frames, gpu, features_batch_size)
         change_points, frames_per_segment = cls._get_segments(features)
         probs = cls._get_probs(features, gpu)
         chosen_frames = cls._get_chosen_frames(frames, probs, change_points, frames_per_segment)
@@ -46,7 +47,7 @@ class KeyFramesExtractor:
         return frames
 
     @staticmethod
-    def _get_features(frames, gpu=True):
+    def _get_features(frames, gpu=True, batch_size=1):
         caffe_root = os.environ.get("CAFFE_ROOT")
         if not caffe_root:
             print("Caffe root path not found.")
@@ -59,7 +60,7 @@ class KeyFramesExtractor:
         if not gpu:
             caffe.set_mode_cpu()
         net = caffe.Net(model_file, pretrained, caffe.TEST)
-        net.blobs["data"].reshape(1, 3, 224, 224)
+        net.blobs["data"].reshape(batch_size, 3, 224, 224)
 
         mu = np.load(caffe_root + "/python/caffe/imagenet/ilsvrc_2012_mean.npy")
         mu = mu.mean(1).mean(1)
@@ -69,17 +70,16 @@ class KeyFramesExtractor:
         transformer.set_raw_scale("data", 255)
         transformer.set_channel_swap("data", (2, 1, 0))
 
-        features = []
-        for frame in frames:
-            transformed_image = transformer.preprocess("data", frame)
-            net.blobs["data"].data[0] = transformed_image 
+        features = np.zeros(shape=(len(frames), 1024))
+        for idx_batch, (n_batch, frames_batch) in enumerate(batch(frames, batch_size)):
+            for i in range(n_batch):
+                net.blobs['data'].data[i, ...] = transformer.preprocess("data", frames_batch[i])
             net.forward()
-            temp = net.blobs["pool5/7x7_s1"].data[0] 
+            temp = net.blobs["pool5/7x7_s1"].data[0:n_batch]
             temp = temp.squeeze().copy()
-            features.append(temp)
-        features = np.array(features)
-        features = normalize(features)
-        return features
+            features[idx_batch * batch_size:idx_batch * batch_size + n_batch] = temp
+        normalize(features, copy=False)
+        return features.astype(np.float32)
         
     @staticmethod
     def _get_probs(features, gpu=True):

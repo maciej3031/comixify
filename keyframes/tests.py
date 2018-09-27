@@ -7,6 +7,7 @@ from django.core.files import File
 import shutil
 from utils import jj
 from django.conf import settings
+from keyframes.utils import batch
 
 VIDEO_PATH = "tmp/f1_short.mp4" 
 VIDEO_N_FRAMES = 47 
@@ -52,3 +53,17 @@ class KeyframesTestCase(TestCase):
         chosen_frames = KeyFramesExtractor._get_chosen_frames(frames, probs, change_points, frames_per_segment)
         self.assertIsInstance(chosen_frames, list)
         self.assertTrue(len(chosen_frames) == 10)
+
+
+class UtilsTestCase(TestCase):
+    def test_batch(self):
+        """Barch is working"""
+        arr = [1, 1, 2, 2, 3, 3, 4]
+        batched_arr = batch(arr, 2)
+        self.assertEqual(list(batched_arr), [(2, [1, 1]), (2, [2, 2]), (2, [3, 3]), (1, [4])])
+
+    def test_empty_batch(self):
+        """Barch is working"""
+        arr = []
+        batched_arr = batch(arr, 2)
+        self.assertEqual(list(batched_arr), [])
