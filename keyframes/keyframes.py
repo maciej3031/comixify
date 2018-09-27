@@ -6,8 +6,9 @@ import torch.nn as nn
 import caffe
 from subprocess import call
 from math import ceil
-from django.conf import settings
 from sklearn.preprocessing import normalize
+from django.conf import settings
+from django.core.cache import cache
 
 from utils import jj
 from keyframes_rl.models import DSN
@@ -51,14 +52,14 @@ class KeyFramesExtractor:
         caffe_root = os.environ.get("CAFFE_ROOT")
         if not caffe_root:
             print("Caffe root path not found.")
+        if not gpu:
+            caffe.set_mode_cpu()
 
         model_file = caffe_root + "/models/bvlc_googlenet/deploy.prototxt"
         pretrained = caffe_root + "/models/bvlc_googlenet/bvlc_googlenet.caffemodel"
-
         if not os.path.isfile(pretrained):
             print("PRETRAINED Model not found.")
-        if not gpu:
-            caffe.set_mode_cpu()
+
         net = caffe.Net(model_file, pretrained, caffe.TEST)
         net.blobs["data"].reshape(batch_size, 3, 224, 224)
 
@@ -83,16 +84,22 @@ class KeyFramesExtractor:
         
     @staticmethod
     def _get_probs(features, gpu=True):
-        model_path = "keyframes_rl/pretrained_model/model_epoch60.pth.tar"
-        model = DSN(in_dim=1024, hid_dim=256, num_layers=1, cell="lstm")
-        if gpu:
-            checkpoint = torch.load(model_path)
-        else:
-            checkpoint = torch.load(model_path, map_location='cpu')
-        model.load_state_dict(checkpoint)
-        if gpu:
-            model = nn.DataParallel(model).cuda()
-        model.eval()
+        model_cache_key = "keyframes_rl_model_cache"
+        model = cache.get(model_cache_key)  # get model from cache
+
+        if model is None:
+            model_path = "keyframes_rl/pretrained_model/model_epoch60.pth.tar"
+            model = DSN(in_dim=1024, hid_dim=256, num_layers=1, cell="lstm")
+            if gpu:
+                checkpoint = torch.load(model_path)
+            else:
+                checkpoint = torch.load(model_path, map_location='cpu')
+            model.load_state_dict(checkpoint)
+            if gpu:
+                model = nn.DataParallel(model).cuda()
+            model.eval()
+            cache.set(model_cache_key, model, None)
+
         seq = torch.from_numpy(features).unsqueeze(0)
         if gpu: seq = seq.cuda()
         probs = model(seq)
