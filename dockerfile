@@ -15,6 +15,10 @@ RUN apt-get update && apt-get install -y apt-utils software-properties-common &&
     python3.6 -m pip install tensorflow-gpu h5py keras && \
     python3.6 -m pip install scikit-image opencv-contrib-python pyyaml
 
+RUN mkdir /comixify
+COPY ./Makefile.config /comixify/Makefile.config
+COPY ./cudnn.hpp /comixify/cudnn.hpp
+
 ENV CAFFE_ROOT=/opt/caffe
 WORKDIR $CAFFE_ROOT
 
@@ -41,7 +45,6 @@ RUN python3.6 $CAFFE_ROOT/scripts/download_model_binary.py $CAFFE_ROOT/models/bv
 RUN python3.6 -m pip install markdown=="2.6.11"
 RUN python3.6 -m pip install python-dateutil --upgrade
 
-RUN mkdir /comixify
 WORKDIR /comixify
 COPY . /comixify
 RUN python3.6 -m pip install -r requirements.txt
