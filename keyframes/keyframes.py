@@ -9,6 +9,7 @@ from math import ceil
 from sklearn.preprocessing import normalize
 from django.conf import settings
 from django.core.cache import cache
+from skimage import img_as_ubyte
 
 from utils import jj
 from keyframes_rl.models import DSN
@@ -128,7 +129,7 @@ class KeyFramesExtractor:
                 "frame": frames[x]
             })
         chosen_frames.sort(key=lambda k: k['index'])
-        chosen_frames = [o["frame"] for o in chosen_frames]
+        chosen_frames = [img_as_ubyte(o["frame"]) for o in chosen_frames]
         return chosen_frames
 
     @staticmethod
