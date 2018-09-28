@@ -3,28 +3,48 @@ import uuid
 import numpy as np
 import torch
 import torch.nn as nn
+os.environ['GLOG_minloglevel'] = '2' # Prevent caffe shell loging
 import caffe
+from datetime import datetime
 from subprocess import call
 from math import ceil
 from sklearn.preprocessing import normalize
 from django.conf import settings
 from django.core.cache import cache
 from skimage import img_as_ubyte
+import logging
 
 from utils import jj
 from keyframes_rl.models import DSN
 from keyframes.kts import cpd_auto
 from keyframes.utils import batch
 
+logger = logging.getLogger(__name__)
+
 
 class KeyFramesExtractor:
     @classmethod
     def get_keyframes(cls, video, gpu=settings.GPU, features_batch_size=settings.FEATURE_BATCH_SIZE):
+        time = datetime.now()
         frames_paths, all_frames_tmp_dir = cls._get_all_frames(video)
+        new_time = datetime.now()
+        logger.debug("Extracted frames: " + str((time - new_time).seconds))
+        time = new_time
         frames = cls._get_frames(frames_paths)
+        new_time = datetime.now()
+        logger.debug("Read frames: " + str((time - new_time).seconds))
+        time = new_time
         features = cls._get_features(frames, gpu, features_batch_size)
+        new_time = datetime.now()
+        logger.debug("Extracted features: " + str((time - new_time).seconds))
+        time = new_time
         change_points, frames_per_segment = cls._get_segments(features)
+        new_time = datetime.now()
+        logger.debug("Got segments: " + str((time - new_time).seconds))
+        time = new_time
         probs = cls._get_probs(features, gpu)
+        new_time = datetime.now()
+        logger.debug("Got probs: " + str((time - new_time).seconds))
         chosen_frames = cls._get_chosen_frames(frames, probs, change_points, frames_per_segment)
         return chosen_frames
 
