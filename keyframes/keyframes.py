@@ -81,7 +81,6 @@ class KeyFramesExtractor:
 
         features = np.zeros(shape=(len(frames), 1024))
         for idx_batch, (n_batch, frames_batch) in enumerate(batch(frames, batch_size)):
-            print("Batch " + str(idx_batch) + " / " + str(n_batch))
             for i in range(n_batch):
                 net.blobs['data'].data[i, ...] = transformer.preprocess("data", frames_batch[i])
             net.forward()
@@ -137,7 +136,7 @@ class KeyFramesExtractor:
                 "frame": frames[x]
             })
         chosen_frames.sort(key=lambda k: k['index'])
-        chosen_frames = [img_as_ubyte(o["frame"]) for o in chosen_frames]
+        chosen_frames = [img_as_ubyte(o["frame"])[..., ::-1] for o in chosen_frames]
         return chosen_frames
 
     @staticmethod
