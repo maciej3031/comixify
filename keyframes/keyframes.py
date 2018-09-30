@@ -25,26 +25,11 @@ logger = logging.getLogger(__name__)
 class KeyFramesExtractor:
     @classmethod
     def get_keyframes(cls, video, gpu=settings.GPU, features_batch_size=settings.FEATURE_BATCH_SIZE):
-        time = datetime.now()
         frames_paths, all_frames_tmp_dir = cls._get_all_frames(video)
-        new_time = datetime.now()
-        print("Extracted frames: " + str((time - new_time).total_seconds()))
-        time = new_time
         frames = cls._get_frames(frames_paths)
-        new_time = datetime.now()
-        print("Read frames: " + str((time - new_time).total_seconds()))
-        time = new_time
         features = cls._get_features(frames, gpu, features_batch_size)
-        new_time = datetime.now()
-        print("Extracted features: " + str((time - new_time).total_seconds()))
-        time = new_time
         change_points, frames_per_segment = cls._get_segments(features)
-        new_time = datetime.now()
-        print("Got segments: " + str((time - new_time).total_seconds()))
-        time = new_time
         probs = cls._get_probs(features, gpu)
-        new_time = datetime.now()
-        print("Got probs: " + str((time - new_time).seconds))
         chosen_frames = cls._get_chosen_frames(frames, probs, change_points, frames_per_segment)
         return chosen_frames
 
@@ -52,16 +37,12 @@ class KeyFramesExtractor:
     def _get_all_frames(video):
         all_frames_tmp_dir = uuid.uuid4()
         os.mkdir(jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}"))
-        call(["ffmpeg", "-i", f"{video.file.path}", "-c:v", "libxvid", "-qscale:v", "2", "-an",
-              jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "video.mp4")])
-        call(["ffmpeg", "-i", jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "video.mp4"), "-vf",
-              "select=eq(pict_type\,I)", "-vsync", "vfr",
-              jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "%06d.jpeg")])
+        call(["ffmpeg", "-i", f"{video.file.path}", "-vf", "select=not(mod(n\\,15))", "-vsync", "vfr", "-q:v", "2",
+            jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "%06d.jpeg")])
         frames_paths = []
         for dirname, dirnames, filenames in os.walk(jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}")):
             for filename in filenames:
-                if not filename.endswith(".mp4"):
-                    frames_paths.append(jj(dirname, filename))
+                frames_paths.append(jj(dirname, filename))
         return sorted(frames_paths), all_frames_tmp_dir
 
     @staticmethod
