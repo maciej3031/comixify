@@ -52,12 +52,16 @@ class KeyFramesExtractor:
     def _get_all_frames(video):
         all_frames_tmp_dir = uuid.uuid4()
         os.mkdir(jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}"))
-        call(["ffmpeg", "-i", f"{video.file.path}", "-vf", "select=not(mod(n\\,15))", "-vsync", "vfr", "-q:v", "2",
-            jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "%06d.jpeg")])
+        call(["ffmpeg", "-i", f"{video.file.path}", "-c:v", "libxvid", "-qscale:v", "2", "-an",
+              jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "video.mp4")])
+        call(["ffmpeg", "-i", jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "video.mp4"), "-vf",
+              "select=eq(pict_type\,I)", "-vsync", "vfr",
+              jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "%06d.jpeg")])
         frames_paths = []
         for dirname, dirnames, filenames in os.walk(jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}")):
             for filename in filenames:
-                frames_paths.append(jj(dirname, filename))
+                if not filename.endswith(".mp4"):
+                    frames_paths.append(jj(dirname, filename))
         return sorted(frames_paths), all_frames_tmp_dir
 
     @staticmethod
