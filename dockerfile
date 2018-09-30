@@ -52,6 +52,5 @@ RUN python3.6 -m pip install -r requirements.txt
 # Port to expose
 EXPOSE 8008
 
-WORKDIR /comixify
 ENTRYPOINT ["sh", "entrypoint.sh"]
 CMD ['start']
