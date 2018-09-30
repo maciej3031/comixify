@@ -75,6 +75,8 @@ class KeyFramesExtractor:
             print("Caffe root path not found.")
         if not gpu:
             caffe.set_mode_cpu()
+        else:
+            caffe.set_mode_gpu()
 
         model_file = caffe_root + "/models/bvlc_googlenet/deploy.prototxt"
         pretrained = caffe_root + "/models/bvlc_googlenet/bvlc_googlenet.caffemodel"
