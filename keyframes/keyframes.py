@@ -28,19 +28,19 @@ class KeyFramesExtractor:
         time = datetime.now()
         frames_paths, all_frames_tmp_dir = cls._get_all_frames(video)
         new_time = datetime.now()
-        print("Extracted frames: " + str((time - new_time).seconds))
+        print("Extracted frames: " + str((time - new_time).total_seconds()))
         time = new_time
         frames = cls._get_frames(frames_paths)
         new_time = datetime.now()
-        print("Read frames: " + str((time - new_time).seconds))
+        print("Read frames: " + str((time - new_time).total_seconds()))
         time = new_time
         features = cls._get_features(frames, gpu, features_batch_size)
         new_time = datetime.now()
-        print("Extracted features: " + str((time - new_time).seconds))
+        print("Extracted features: " + str((time - new_time).total_seconds()))
         time = new_time
         change_points, frames_per_segment = cls._get_segments(features)
         new_time = datetime.now()
-        print("Got segments: " + str((time - new_time).seconds))
+        print("Got segments: " + str((time - new_time).total_seconds()))
         time = new_time
         probs = cls._get_probs(features, gpu)
         new_time = datetime.now()
