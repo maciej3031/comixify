@@ -61,6 +61,56 @@ img {
 	background-color: #eee;
 }
 
+.yt-label {
+	margin: 10px 0 10px 20px;
+	display: block;
+}
+
+#yt-link {
+	height: 30px;
+	margin-right: 5px;
+	padding: 6px 10px;
+	background-color: #fff;
+	border: 1px solid #D1D1D1;
+	border-radius: 3px;
+	box-shadow: none;
+	box-sizing: border-box;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+
+#yt-link:focus {
+	border: 1px solid #33C3F0;
+	outline: 0;
+}
+
+button {
+	display: inline-block;
+	height: 30px;
+	padding: 0 30px;
+	color: #555;
+	text-align: center;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 30px;
+	text-transform: uppercase;
+	text-decoration: none;
+	white-space: nowrap;
+	background-color: transparent;
+	border-radius: 3px;
+	border: 1px solid #bbb;
+	cursor: pointer;
+	box-sizing: border-box;
+}
+button:hover,
+button:focus {
+	color: #333;
+	border-color: #888;
+	outline: 0;
+}
+
 @media all and (max-width: 700px) {
 	.wrap {
 		margin-top: 0;

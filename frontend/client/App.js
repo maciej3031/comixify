@@ -8,7 +8,8 @@ import { css } from "react-emotion";
 import {
 	COMIXIFY_API,
 	MAX_FILE_SIZE,
-	PERMITTED_VIDEO_EXTENSIONS
+	PERMITTED_VIDEO_EXTENSIONS,
+    FROM_YOUTUBE_API
 } from "./constants";
 
 class App extends React.Component {
@@ -19,6 +20,7 @@ class App extends React.Component {
 		UPLOAD_ERROR: 3,
 		DROP_ERROR: 4
 	};
+	ytInput = React.createRef();
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -27,6 +29,8 @@ class App extends React.Component {
 			result_comics: null
 		};
 		this.onVideoDrop = this.onVideoDrop.bind(this);
+        this.handleResponse = this.handleResponse.bind(this);
+        this.onYouTubeSubmit = this.onYouTubeSubmit.bind(this);
 		this.onVideoUploadProgress = this.onVideoUploadProgress.bind(this);
 	}
 	onVideoUploadProgress(progressEvent) {
@@ -35,6 +39,18 @@ class App extends React.Component {
 		);
 		console.log(percentCompleted);
 	}
+	handleResponse(res) {
+	    if (res.data["status_message"] === "ok") {
+            this.setState({
+                state: App.appStates.FINISHED,
+                result_comics: res.data["comic"]
+            });
+        } else {
+            this.setState({
+                state: App.appStates.UPLOAD_ERROR
+            });
+        }
+    }
 	processVideo(video) {
 		let data = new FormData();
 		data.append("file", video);
@@ -42,18 +58,7 @@ class App extends React.Component {
 			headers: { "content-type": "multipart/form-data" },
 			onUploadProgress: this.onVideoUploadProgress
 		})
-			.then(res => {
-				if (res.data["status_message"] === "ok") {
-					this.setState({
-						state: App.appStates.FINISHED,
-						result_comics: res.data["comic"]
-					});
-				} else {
-					this.setState({
-						state: App.appStates.UPLOAD_ERROR
-					});
-				}
-			})
+			.then(this.handleResponse)
 			.catch(err => {
 				console.error(err);
 				this.setState({
@@ -75,10 +80,25 @@ class App extends React.Component {
 		}
 		this.processVideo(files[0]);
 	}
-
+	onYouTubeSubmit() {
+		let ytLink = this.ytInput.current.value;
+		post(FROM_YOUTUBE_API, {
+		    url: ytLink
+        })
+			.then(this.handleResponse)
+			.catch(err => {
+				console.error(err);
+				this.setState({
+					state: App.appStates.UPLOAD_ERROR
+				});
+			});
+		this.setState({
+			state: App.appStates.PROCESSING
+		});
+	}
 	render() {
 		let { state, drop_errors, result_comics } = this.state;
-		let showDropzone = [
+		let showUsage = [
 			App.appStates.INITIAL,
 			App.appStates.UPLOAD_ERROR,
 			App.appStates.DROP_ERROR,
@@ -95,7 +115,7 @@ class App extends React.Component {
 				{state === App.appStates.UPLOAD_ERROR && (
 					<p>Server Error: Please try again later.</p>
 				)}
-				{showDropzone && (
+				{showUsage && (
 					<Dropzone
 						onDrop={this.onVideoDrop}
 						accept={PERMITTED_VIDEO_EXTENSIONS}
@@ -105,8 +125,15 @@ class App extends React.Component {
 						rejectClassName="dropzone--rejected"
 						multiple={false} // Only one video at the time
 					>
-						<p>Drop files here, or click to select manually</p>
+						<p>Drop video here, or click to select manually</p>
 					</Dropzone>
+				)}
+				{showUsage && (
+					<div>
+						<label htmlFor="yt-link" className="yt-label">Or use YouTube link:</label>
+						<input type="url" id="yt-link" ref={this.ytInput}/>
+						<button onClick={this.onYouTubeSubmit}>Run</button>
+					</div>
 				)}
 				{state === App.appStates.PROCESSING && (
 					<BarLoader

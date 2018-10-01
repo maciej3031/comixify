@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config ./frontend/client/webpack.config.js",
     "build:watch": "webpack --config ./frontend/client/webpack.config.js --watch",
-    "build:prod": "NODE_ENV=production webpack --config ./frontend/client/webpack.config.js"
+    "build:prod": "webpack --env.production --config ./frontend/client/webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -35,11 +35,11 @@
     "react-dropzone": "^5.0.1",
     "react-spinners": "^0.4.5",
     "style-loader": "^0.23.0",
-    "uglifyjs-webpack-plugin": "^1.2.5",
-    "webpack": "^4.17.1",
-    "webpack-merge": "^4.1.1"
+    "uglifyjs-webpack-plugin": "^1.2.5"
   },
   "devDependencies": {
-    "webpack-cli": "^3.1.0"
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.0",
+    "webpack-merge": "^4.1.4"
   }
 }
