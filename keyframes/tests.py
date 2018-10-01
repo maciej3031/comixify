@@ -10,7 +10,7 @@ from django.conf import settings
 from keyframes.utils import batch
 
 VIDEO_PATH = "tmp/f1_short.mp4" 
-VIDEO_N_FRAMES = 65
+VIDEO_N_FRAMES = 47
 
 
 class KeyframesTestCase(TestCase):

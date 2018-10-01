@@ -96,7 +96,7 @@ class KeyFramesExtractor:
         model = cache.get(model_cache_key)  # get model from cache
 
         if model is None:
-            model_path = "keyframes_rl/pretrained_model/model_epoch60.pth.tar"
+            model_path = "keyframes_rl/pretrained_model/model_epoch100.pth.tar"
             model = DSN(in_dim=1024, hid_dim=256, num_layers=1, cell="lstm")
             if gpu:
                 checkpoint = torch.load(model_path)
