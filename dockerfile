@@ -23,25 +23,24 @@ WORKDIR $CAFFE_ROOT
 
 ENV CLONE_TAG=1.0
 
-RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git .
-RUN cp /comixify/Makefile.config ./Makefile.config
-RUN cd python && for req in $(cat requirements.txt) pydot; do python3.6 -m pip install $req; done && cd .. 
-RUN sed -i '415s/.*/NVCCFLAGS += -D_FORCE_INLINES -ccbin=$(CXX) -Xcompiler -fPIC $(COMMON_FLAGS)/' Makefile
-RUN echo "# ---[ Includes" >> CMakeLists.txt
-RUN echo "set(${CMAKE_CXX_FLAGS} "-D_FORCE_INLINES ${CMAKE_CXX_FLAGS}")" >> CMakeLists.txt
-RUN ls -la /usr/lib/x86_64-linux-gnu
-RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python-py35.so /usr/lib/x86_64-linux-gnu/libboost_python3.so 
-RUN make all -j"$(nproc)"
-RUN make distribute
+RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git . && \
+    cp /comixify/Makefile.config ./Makefile.config && \
+    cd python && for req in $(cat requirements.txt) pydot; do python3.6 -m pip install $req; done && cd .. && \
+    sed -i '415s/.*/NVCCFLAGS += -D_FORCE_INLINES -ccbin=$(CXX) -Xcompiler -fPIC $(COMMON_FLAGS)/' Makefile && \
+    echo "# ---[ Includes" >> CMakeLists.txt && \
+    echo "set(${CMAKE_CXX_FLAGS} "-D_FORCE_INLINES ${CMAKE_CXX_FLAGS}")" >> CMakeLists.txt && \
+    ls -la /usr/lib/x86_64-linux-gnu && \
+    ln -s /usr/lib/x86_64-linux-gnu/libboost_python-py35.so /usr/lib/x86_64-linux-gnu/libboost_python3.so && \
+    make all -j"$(nproc)" && \
+    make distribute && \
 
 ENV PYCAFFE_ROOT $CAFFE_ROOT/python
 ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
 ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
-RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
-RUN python3.6 $CAFFE_ROOT/scripts/download_model_binary.py $CAFFE_ROOT/models/bvlc_googlenet
-
-RUN python3.6 -m pip install markdown=="2.6.11"
-RUN python3.6 -m pip install python-dateutil --upgrade
+RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig && \
+    python3.6 $CAFFE_ROOT/scripts/download_model_binary.py $CAFFE_ROOT/models/bvlc_googlenet && \
+    python3.6 -m pip install markdown=="2.6.11" && \
+    python3.6 -m pip install python-dateutil --upgrade
 
 WORKDIR /comixify
 COPY . /comixify
