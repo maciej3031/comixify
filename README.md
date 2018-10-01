@@ -2,7 +2,8 @@
 
 #TODO:
 - [ ] Prepare readme
-- [ ] Fix model loading to memory
+- [x] Download videos directly from YouTube
+- [x] Fix model loading to memory
 - [ ] Replace ffmpeg with some keyframes extractor
 - [ ] Prepare own ComixGAN
 - [ ] Prepare some more intelligent method for comic layout

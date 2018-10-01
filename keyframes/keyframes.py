@@ -1,11 +1,12 @@
 import os
 import uuid
+
 import numpy as np
 import torch
 import torch.nn as nn
-os.environ['GLOG_minloglevel'] = '2' # Prevent caffe shell loging
+
+os.environ['GLOG_minloglevel'] = '2'  # Prevent caffe shell loging
 import caffe
-from datetime import datetime
 from subprocess import call
 from math import ceil
 from sklearn.preprocessing import normalize
@@ -35,12 +36,12 @@ class KeyFramesExtractor:
 
     @staticmethod
     def _get_all_frames(video):
-        all_frames_tmp_dir = uuid.uuid4()
-        os.mkdir(jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}"))
-        call(["ffmpeg", "-i", f"{video.file.path}", "-vf", "select=not(mod(n\\,15))", "-vsync", "vfr", "-q:v", "2",
-            jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "%06d.jpeg")])
+        all_frames_tmp_dir = uuid.uuid4().hex
+        os.mkdir(jj(settings.TMP_DIR, all_frames_tmp_dir))
+        call(["ffmpeg", "-i", video.file.path, "-vf", "select=not(mod(n\\,15))", "-vsync", "vfr", "-q:v", "2",
+              jj(settings.TMP_DIR, all_frames_tmp_dir, "%06d.jpeg")])
         frames_paths = []
-        for dirname, dirnames, filenames in os.walk(jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}")):
+        for dirname, dirnames, filenames in os.walk(jj(settings.TMP_DIR, all_frames_tmp_dir)):
             for filename in filenames:
                 frames_paths.append(jj(dirname, filename))
         return sorted(frames_paths), all_frames_tmp_dir
@@ -89,7 +90,7 @@ class KeyFramesExtractor:
             features[idx_batch * batch_size:idx_batch * batch_size + n_batch] = temp
         normalize(features, copy=False)
         return features.astype(np.float32)
-        
+
     @staticmethod
     def _get_probs(features, gpu=True):
         model_cache_key = "keyframes_rl_model_cache"
