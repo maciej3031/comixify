@@ -17,7 +17,6 @@ RUN apt-get update && apt-get install -y apt-utils software-properties-common &&
 
 RUN mkdir /comixify
 COPY ./Makefile.config /comixify/Makefile.config
-COPY ./cudnn.hpp /comixify/cudnn.hpp
 
 ENV CAFFE_ROOT=/opt/caffe
 WORKDIR $CAFFE_ROOT
