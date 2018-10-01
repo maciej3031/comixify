@@ -22,7 +22,7 @@ COPY ./cudnn.hpp /comixify/cudnn.hpp
 ENV CAFFE_ROOT=/opt/caffe
 WORKDIR $CAFFE_ROOT
 
-ENV CLONE_TAG=rc5
+ENV CLONE_TAG=1.0
 
 RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git .
 RUN cp /comixify/Makefile.config ./Makefile.config
@@ -30,7 +30,6 @@ RUN cd python && for req in $(cat requirements.txt) pydot; do python3.6 -m pip i
 RUN sed -i '415s/.*/NVCCFLAGS += -D_FORCE_INLINES -ccbin=$(CXX) -Xcompiler -fPIC $(COMMON_FLAGS)/' Makefile
 RUN echo "# ---[ Includes" >> CMakeLists.txt
 RUN echo "set(${CMAKE_CXX_FLAGS} "-D_FORCE_INLINES ${CMAKE_CXX_FLAGS}")" >> CMakeLists.txt
-RUN cp /comixify/cudnn.hpp ./include/caffe/util/
 RUN ls -la /usr/lib/x86_64-linux-gnu
 RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python-py35.so /usr/lib/x86_64-linux-gnu/libboost_python3.so 
 RUN make all -j"$(nproc)"
