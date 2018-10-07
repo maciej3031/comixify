@@ -19,7 +19,10 @@ class Comixify(APIView):
 
         video_file = serializer.validated_data["file"]
         video = Video.objects.create(file=video_file)
-        comic_image = video.create_comic()
+        comic_image = video.create_comic(
+            frames_mode=serializer.validated_data["frames_mode"],
+            rl_mode=serializer.validated_data["rl_mode"]
+        )
         comic = Comic.create_from_nparray(comic_image, video)
 
         response = {
@@ -45,7 +48,10 @@ class ComixifyFromYoutube(APIView):
         video = Video()
         video.download_from_youtube(yt_url)
         video.save()
-        comic_image = video.create_comic()
+        comic_image = video.create_comic(
+            frames_mode=serializer.validated_data["frames_mode"],
+            rl_mode=serializer.validated_data["rl_mode"]
+        )
         comic = Comic.create_from_nparray(comic_image, video)
 
         response = {

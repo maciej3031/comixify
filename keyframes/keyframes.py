@@ -25,25 +25,34 @@ logger = logging.getLogger(__name__)
 
 class KeyFramesExtractor:
     @classmethod
-    def get_keyframes(cls, video, gpu=settings.GPU, features_batch_size=settings.FEATURE_BATCH_SIZE):
-        frames_paths, all_frames_tmp_dir = cls._get_all_frames(video)
+    def get_keyframes(cls, video, gpu=settings.GPU, features_batch_size=settings.FEATURE_BATCH_SIZE,
+                      frames_mode=0, rl_mode=0):
+        frames_paths, all_frames_tmp_dir = cls._get_all_frames(video, mode=frames_mode)
         frames = cls._get_frames(frames_paths)
         features = cls._get_features(frames, gpu, features_batch_size)
         change_points, frames_per_segment = cls._get_segments(features)
-        probs = cls._get_probs(features, gpu)
+        probs = cls._get_probs(features, gpu, mode=rl_mode)
         chosen_frames = cls._get_chosen_frames(frames, probs, change_points, frames_per_segment)
         return chosen_frames
 
     @staticmethod
-    def _get_all_frames(video):
+    def _get_all_frames(video, mode=0):
         all_frames_tmp_dir = uuid.uuid4().hex
         os.mkdir(jj(settings.TMP_DIR, all_frames_tmp_dir))
-        call(["ffmpeg", "-i", video.file.path, "-vf", "select=not(mod(n\\,15))", "-vsync", "vfr", "-q:v", "2",
-              jj(settings.TMP_DIR, all_frames_tmp_dir, "%06d.jpeg")])
+        if mode == 1:
+            call(["ffmpeg", "-i", f"{video.file.path}", "-c:v", "libxvid", "-qscale:v", "1", "-an",
+                  jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "video.mp4")])
+            call(["ffmpeg", "-i", jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "video.mp4"), "-vf",
+                  "select=eq(pict_type\,I)", "-vsync", "vfr",
+                  jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "%06d.jpeg")])
+        else:
+            call(["ffmpeg", "-i", video.file.path, "-vf", "select=not(mod(n\\,15))", "-vsync", "vfr", "-q:v", "2",
+                  jj(settings.TMP_DIR, all_frames_tmp_dir, "%06d.jpeg")])
         frames_paths = []
         for dirname, dirnames, filenames in os.walk(jj(settings.TMP_DIR, all_frames_tmp_dir)):
             for filename in filenames:
-                frames_paths.append(jj(dirname, filename))
+                if not filename.endswith(".mp4"):
+                    frames_paths.append(jj(dirname, filename))
         return sorted(frames_paths), all_frames_tmp_dir
 
     @staticmethod
@@ -92,12 +101,15 @@ class KeyFramesExtractor:
         return features.astype(np.float32)
 
     @staticmethod
-    def _get_probs(features, gpu=True):
-        model_cache_key = "keyframes_rl_model_cache"
+    def _get_probs(features, gpu=True, mode=0):
+        model_cache_key = "keyframes_rl_model_cache_" + str(mode)
         model = cache.get(model_cache_key)  # get model from cache
 
         if model is None:
-            model_path = "keyframes_rl/pretrained_model/model_epoch100.pth.tar"
+            if mode == 1:
+                model_path = "keyframes_rl/pretrained_model/model_1.pth.tar"
+            else:
+                model_path = "keyframes_rl/pretrained_model/model_0.pth.tar"
             model = DSN(in_dim=1024, hid_dim=256, num_layers=1, cell="lstm")
             if gpu:
                 checkpoint = torch.load(model_path)
