@@ -1,7 +1,8 @@
+const merge = require("webpack-merge");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const webpack = require("webpack");
+
 module.exports = env => {
-    const merge = require("webpack-merge");
-    const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-    const webpack = require("webpack");
 
     let common = {
         entry: {
@@ -35,7 +36,7 @@ module.exports = env => {
         }
     };
 
-    if (env.production) {
+    if (env && env.production) {
         return merge(common, {
             plugins: [
                 new webpack.DefinePlugin({

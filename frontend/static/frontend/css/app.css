@@ -61,7 +61,7 @@ img {
 	background-color: #eee;
 }
 
-.yt-label {
+.yt-label, .yt-clips-label {
 	margin: 10px 0 10px 20px;
 	display: block;
 }
@@ -109,6 +109,20 @@ button:focus {
 	color: #333;
 	border-color: #888;
 	outline: 0;
+}
+
+.youtube-clips {
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+
+.youtube-clips > div {
+
+}
+
+.yt-clip-label {
+
 }
 
 @media all and (max-width: 700px) {
