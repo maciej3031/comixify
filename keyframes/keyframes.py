@@ -17,6 +17,7 @@ import logging
 
 from utils import jj
 from keyframes_rl.models import DSN
+from popularity.models import PopularityPredictor
 from keyframes.kts import cpd_auto
 from keyframes.utils import batch
 
@@ -30,9 +31,11 @@ class KeyFramesExtractor:
         frames_paths, all_frames_tmp_dir = cls._get_all_frames(video, mode=frames_mode)
         frames = cls._get_frames(frames_paths)
         features = cls._get_features(frames, gpu, features_batch_size)
-        change_points, frames_per_segment = cls._get_segments(features)
-        probs = cls._get_probs(features, gpu, mode=rl_mode)
-        chosen_frames = cls._get_chosen_frames(frames, probs, change_points, frames_per_segment)
+        norm_features = normalize(features)
+        change_points, frames_per_segment = cls._get_segments(norm_features)
+        probs = cls._get_probs(norm_features, gpu, mode=rl_mode)
+        keyframes = cls._get_keyframes(frames, probs, change_points, frames_per_segment)
+        chosen_frames = cls._get_popularity_chosen_frames(keyframes, features)
         return chosen_frames
 
     @staticmethod
@@ -97,7 +100,6 @@ class KeyFramesExtractor:
             temp = net.blobs["pool5/7x7_s1"].data[0:n_batch]
             temp = temp.squeeze().copy()
             features[idx_batch * batch_size:idx_batch * batch_size + n_batch] = temp
-        normalize(features, copy=False)
         return features.astype(np.float32)
 
     @staticmethod
@@ -128,7 +130,7 @@ class KeyFramesExtractor:
         return probs
 
     @staticmethod
-    def _get_chosen_frames(frames, probs, change_points, frames_per_segment, min_keyframes=10):
+    def _get_keyframes(frames, probs, change_points, frames_per_segment, min_keyframes=20):
         gts = []
         s = 0
         for q in frames_per_segment:
@@ -146,18 +148,35 @@ class KeyFramesExtractor:
                 x = low + np.argmax(probs[low:high])
             chosen_frames.append({
                 "index": x,
-                "frame": frames[x]
+                "frame": img_as_ubyte(frames[x])[..., ::-1]
             })
         chosen_frames.sort(key=lambda k: k['index'])
-        chosen_frames = [img_as_ubyte(o["frame"])[..., ::-1] for o in chosen_frames]
         return chosen_frames
+
+    @staticmethod
+    def _get_popularity_chosen_frames(frames, features, n_frames=10):
+        model_cache_key = "popularity_model_cache"
+        model = cache.get(model_cache_key)  # get model from cache
+
+        if model is None:
+            model = PopularityPredictor()
+            cache.set(model_cache_key, model, None)
+
+        for frame in frames:
+            x = features[frame["index"]]
+            frame["popularity"] = model.get_popularity_score(x).squeeze()
+
+        chosen_frames = sorted(frames, key=lambda k: k['popularity'], reverse=True)
+        chosen_frames = chosen_frames[0:n_frames]
+        chosen_frames.sort(key=lambda k: k['index'])
+        return [o["frame"] for o in chosen_frames]
 
     @staticmethod
     def _get_segments(features):
         K = np.dot(features, features.T)
         n_frames = int(K.shape[0])
-        min_segments = int(ceil(n_frames / 10))
-        min_segments = max(10, min_segments)
+        min_segments = int(ceil(n_frames / 20))
+        min_segments = max(20, min_segments)
         min_segments = min(n_frames - 1, min_segments)
         cps, scores = cpd_auto(K, min_segments, 1)
         change_points = [
