@@ -1,6 +1,6 @@
 import pickle
 
-MODEL_PATH = 'popularity/pretrained_model/svr_test_11.10.sk'
+MODEL_PATH = 'popularity/pretrained_model/model.sk'
 
 
 class PopularityPredictor:
