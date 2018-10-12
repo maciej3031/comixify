@@ -20,8 +20,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Use a separate file for the secret key
-with open(os.path.join(BASE_DIR, 'secretkey.txt')) as f:
-    SECRET_KEY = f.read().strip()
+# with open(os.path.join(BASE_DIR, 'secretkey.txt')) as f:
+#     SECRET_KEY = f.read().strip()
+
+SECRET_KEY = "1"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG') == 'true'
@@ -79,13 +81,13 @@ WSGI_APPLICATION = 'settings.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'postgres',
-        'USER': 'postgres',
-        'HOST': 'db',
-        'PORT': '5432',
-        'PASSWORD': 'postgres',
-        'CONN_MAX_AGE': 60,
+        # 'USER': 'postgres',
+        # 'HOST': 'db',
+        # 'PORT': '5432',
+        # 'PASSWORD': 'postgres',
+        # 'CONN_MAX_AGE': 60,
     }
 }
 
@@ -139,8 +141,9 @@ PERMITTED_VIDEO_EXTENSIONS = ['mp4', 'avi']
 MAX_FILE_SIZE = 50000000
 NUMBERS_OF_FRAMES_TO_SHOW = 10
 TMP_DIR = 'tmp/'
-GPU = True
+GPU = False
 
-FEATURE_BATCH_SIZE = 32
+FEATURE_BATCH_SIZE = 2
 DEFAULT_FRAMES_SAMPLING_MODE = 0
 DEFAULT_RL_MODE = 0
+DEBUG = True
