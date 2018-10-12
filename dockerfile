@@ -45,7 +45,7 @@ RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig && 
 WORKDIR /comixify
 COPY . /comixify
 RUN mkdir /comixify/popularity/pretrained_model && \
-    wget -P /comixify/popularity/pretrained_model/ -O model.sk https://uc09e02e502c75a0f94502700ba8.dl.dropboxusercontent.com/cd/0/get/AS3P2Mj6bhm8o7W0VT0CRlqFCTN_WdIGCvjGNkYUA-YxsPajn3VDJiGA6tSCTRgUpgnvgktHRId0c2pCHQO5lDSxHtkpU1trsLOKa0acPxiXH95p3y6YpYnScc0b4wUarpGolZFeslLA0lSUodiqZkUpucaDJQOAaizSFNsPcbN-t_3c7RZf8qqoU3ResnhK6-M/file?_download_id=64139804958585964230187748620814832316528266695408017035927113036&_notify_domain=www.dropbox.com&dl=1 && \
+    wget -O /comixify/popularity/pretrained_model/model.sk https://uc09e02e502c75a0f94502700ba8.dl.dropboxusercontent.com/cd/0/get/AS3P2Mj6bhm8o7W0VT0CRlqFCTN_WdIGCvjGNkYUA-YxsPajn3VDJiGA6tSCTRgUpgnvgktHRId0c2pCHQO5lDSxHtkpU1trsLOKa0acPxiXH95p3y6YpYnScc0b4wUarpGolZFeslLA0lSUodiqZkUpucaDJQOAaizSFNsPcbN-t_3c7RZf8qqoU3ResnhK6-M/file?_download_id=64139804958585964230187748620814832316528266695408017035927113036&_notify_domain=www.dropbox.com&dl=1 && \
     python3.6 -m pip install -r requirements.txt
 
 # Port to expose
