@@ -14,7 +14,6 @@ services:
     build: .
     runtime: nvidia
     volumes:
-      - .:/comixify
       - static_volume:/comixify/static
       - media_volume:/comixify/media
     networks:
