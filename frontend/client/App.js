@@ -95,7 +95,7 @@ class App extends React.Component {
 			console.error(rejected);
 			this.setState({
 				drop_errors: ["Maximum size for single video is 50MB"],
-				stata: App.appStates.DROP_ERROR
+				state: App.appStates.DROP_ERROR
 			});
 			return;
 		}

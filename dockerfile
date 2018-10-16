@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y apt-utils software-properties-common &&
     liblmdb-dev libopencv-dev libprotobuf-dev \
     libsnappy-dev protobuf-compiler \
     python-numpy python-setuptools python-scipy \
-    libavformat-dev libswscale-dev && \
+    libavformat-dev libswscale-dev unzip && \
     python3.6 -m pip install --upgrade pip && \
     python3.6 -m pip install jupyter ipywidgets jupyterlab && \
     python3.6 -m pip install tensorflow-gpu h5py keras && \
@@ -44,7 +44,9 @@ RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig && 
 
 WORKDIR /comixify
 COPY . /comixify
-RUN python3.6 -m pip install -r requirements.txt
+RUN unzip popularity/pretrained_model/svr_test_11.10.sk.zip -d popularity/pretrained_model/ && \
+    python3.6 -m pip install -r requirements.txt
+
 
 # Port to expose
 EXPOSE 8008

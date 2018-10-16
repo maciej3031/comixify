@@ -85,7 +85,7 @@ def cpd_nonlin(K, ncp, lmin=1, lmax=100000, backtrack=True, verbose=True, out_sc
     return cps, scores
 
 
-def cpd_auto(K, ncp, vmax, desc_rate=15, min_segments=10, **kwargs):
+def cpd_auto(K, ncp, vmax, desc_rate=15, min_segments=20, **kwargs):
     """Main interface
     Detect change points automatically selecting their number
         K       - kernel between each pair of frames in video
