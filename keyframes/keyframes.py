@@ -188,4 +188,5 @@ class KeyFramesExtractor:
             frames_per_segment.append(int(cps[j + 1] - cps[j]))
         frames_per_segment.append(int(len(features) - cps[len(cps) - 1]))
         change_points.append([cps[len(cps) - 1], len(features) - 1])
+        print("Number of segments: " + str(len(frames_per_segment)))
         return change_points, frames_per_segment
