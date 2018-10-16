@@ -178,7 +178,7 @@ class KeyFramesExtractor:
         min_segments = int(ceil(n_frames / 20))
         min_segments = max(20, min_segments)
         min_segments = min(n_frames - 1, min_segments)
-        cps, scores = cpd_auto(K, min_segments, 1)
+        cps, scores = cpd_auto(K, min_segments, 1, min_segments=min_segments)
         change_points = [
             [0, cps[0] - 1]
         ]
