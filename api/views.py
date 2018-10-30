@@ -22,7 +22,8 @@ class Comixify(APIView):
         comic_image, timings = video.create_comic(
             frames_mode=serializer.validated_data["frames_mode"],
             rl_mode=serializer.validated_data["rl_mode"],
-            image_assessment_mode=serializer.validated_data["image_assessment_mode"]
+            image_assessment_mode=serializer.validated_data["image_assessment_mode"],
+            style_transfer_mode=serializer.validated_data["rl_mode"],
         )
         comic, from_nparray_time = Comic.create_from_nparray(comic_image, video)
         timings['from_nparray_time'] = from_nparray_time
@@ -54,7 +55,8 @@ class ComixifyFromYoutube(APIView):
         comic_image, timings = video.create_comic(
             frames_mode=serializer.validated_data["frames_mode"],
             rl_mode=serializer.validated_data["rl_mode"],
-            image_assessment_mode=serializer.validated_data["image_assessment_mode"]
+            image_assessment_mode=serializer.validated_data["image_assessment_mode"],
+            style_transfer_mode=serializer.validated_data["rl_mode"],
         )
         comic, from_nparray_time = Comic.create_from_nparray(comic_image, video)
         timings['from_nparray_time'] = from_nparray_time
