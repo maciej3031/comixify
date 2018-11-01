@@ -55,7 +55,7 @@ class StyleTransfer():
 
         frames = cls._resize_images(frames, size=384)
         frames = np.stack(frames)
-        frames = frames / frames.max()
+        frames = frames / 255
         stylized_imgs = comixGAN_model.generator.predict(frames)
         return list(255 * stylized_imgs)
 
