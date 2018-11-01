@@ -148,3 +148,4 @@ DEFAULT_IMAGE_ASSESSMENT_MODE = 0
 
 DEFAULT_STYLE_TRANSFER_MODE = 0
 COMIX_GAN_WEIGHTS_PATH = os.path.join(BASE_DIR, 'ComixGAN', 'G_weights.best.hdf5')
+COMIX_GAN_MODEL_PATH = os.path.join(BASE_DIR, 'ComixGAN', 'generator_model.h5')

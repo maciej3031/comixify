@@ -42,7 +42,7 @@ RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig && 
 WORKDIR /comixify
 COPY . /comixify
 RUN unzip popularity/pretrained_model/svr_test_11.10.sk.zip -d popularity/pretrained_model/ && \
-    python3.6 -m pip install -r requirements.txt
+    python3.6 -m pip install -r requirements.txt && \
     python3.6 -m pip install git+https://www.github.com/keras-team/keras-contrib.git
 
 

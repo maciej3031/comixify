@@ -6,6 +6,7 @@ import torch
 import torchvision.transforms as transforms
 from django.conf import settings
 from django.core.cache import cache
+from keras.models import load_model
 from torch.autograd import Variable
 
 from CartoonGAN.network.Transformer import Transformer
@@ -43,19 +44,19 @@ class StyleTransfer():
 
     @classmethod
     def _comix_gan_stylize(cls, frames):
-        model_cache_key = 'model_cache'
-        model = cache.get(model_cache_key)  # get model from cache
+        comixGAN_cache_key = 'comixGAN_model_cache'
+        comixGAN_model = cache.get(comixGAN_cache_key)  # get model from cache
 
-        if model is None:
+        if comixGAN_model is None:
             # load pretrained model
-            model = ComixGAN()
-            model.load_weights(settings.COMIX_GAN_WEIGHTS_PATH)
-            cache.set(model_cache_key, model, None)  # None is the timeout parameter. It means cache forever
+            comixGAN_model = ComixGAN()
+            comixGAN_model.generator = load_model(settings.COMIX_GAN_MODEL_PATH)
+            cache.set(comixGAN_cache_key, comixGAN_model, None)  # None is the timeout parameter. It means cache forever
 
         frames = cls._resize_images(frames, size=384)
         frames = np.stack(frames)
         frames = frames / frames.max()
-        stylized_imgs = model.generator.predict(frames)
+        stylized_imgs = comixGAN_model.generator.predict(frames)
         return list(255 * stylized_imgs)
 
     @classmethod
