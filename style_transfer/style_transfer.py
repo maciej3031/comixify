@@ -60,7 +60,7 @@ class StyleTransfer():
             stylized_batch_of_imgs = comixGAN_model.predict(batch_of_frames)
             stylized_imgs.append(255*stylized_batch_of_imgs)
 
-        return list(np.stack(stylized_imgs))
+        return list(np.concatenate(stylized_imgs, axis=0))
 
     @classmethod
     def _cartoon_gan_stylize(cls, frames, gpu=True, style='Hayao'):
