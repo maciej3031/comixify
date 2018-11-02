@@ -9,9 +9,11 @@ from django.core.cache import cache
 from torch.autograd import Variable
 
 from CartoonGAN.network.Transformer import Transformer
+from utils import profile
 
 
 class StyleTransfer():
+    @profile
     @classmethod
     def get_stylized_frames(cls, frames, method="cartoon_gan", gpu=settings.GPU, **kwargs):
         if method == "cartoon_gan":

@@ -1,8 +1,11 @@
 import cv2
 import numpy as np
 
+from utils import profile
+
 
 class LayoutGenerator():
+    @profile
     @classmethod
     def get_layout(cls, frames):
         result_imgs = cls._pad_images(frames)
