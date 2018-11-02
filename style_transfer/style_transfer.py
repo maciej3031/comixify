@@ -43,20 +43,24 @@ class StyleTransfer():
 
     @classmethod
     def _comix_gan_stylize(cls, frames):
-        comixGAN_cache_key = 'comixGAN_model_cache'
-        comixGAN_model = cache.get(comixGAN_cache_key)  # get model from cache
+        # comixGAN_cache_key = 'comixGAN_model_cache'
+        # comixGAN_model = cache.get(comixGAN_cache_key)  # get model from cache
 
-        if comixGAN_model is None:
+        # if comixGAN_model is None:
             # load pretrained model
-            comixGAN_model = load_model(settings.COMIX_GAN_MODEL_PATH,
-                                                  custom_objects={'InstanceNormalization': InstanceNormalization})
-            cache.set(comixGAN_cache_key, comixGAN_model, None)  # None is the timeout parameter. It means cache forever
+        comixGAN_model = load_model(settings.COMIX_GAN_MODEL_PATH,
+                                    custom_objects={'InstanceNormalization': InstanceNormalization})
+        # cache.set(comixGAN_cache_key, comixGAN_model, None)  # None is the timeout parameter. It means cache forever
 
-        frames = cls._resize_images(frames, size=384)
-        frames = np.stack(frames)
-        frames = frames / 255
-        stylized_imgs = comixGAN_model.predict(frames)
-        return list(255 * stylized_imgs)
+        frames = cls._resize_images(frames, size=450)
+        batch_size = 5
+        stylized_imgs = []
+        for i in range(0, len(frames), batch_size):
+            batch_of_frames = np.stack(frames[i:i+batch_size]) / 255
+            stylized_batch_of_imgs = comixGAN_model.predict(batch_of_frames)
+            stylized_imgs.append(255*stylized_batch_of_imgs)
+
+        return list(np.stack(stylized_imgs))
 
     @classmethod
     def _cartoon_gan_stylize(cls, frames, gpu=True, style='Hayao'):
