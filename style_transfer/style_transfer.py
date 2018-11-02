@@ -8,10 +8,9 @@ from django.conf import settings
 from django.core.cache import cache
 from keras.models import load_model
 from torch.autograd import Variable
-
+from keras_contrib.layers import InstanceNormalization
 from CartoonGAN.network.Transformer import Transformer
 from utils import profile
-from ComixGAN.model import ComixGAN
 
 
 class StyleTransfer():
@@ -40,7 +39,7 @@ class StyleTransfer():
                 h = int(w * ratio)
             resized_img = cv2.resize(img, (w, h))
             resized_images.append(resized_img)
-            return resized_images
+        return resized_images
 
     @classmethod
     def _comix_gan_stylize(cls, frames):
@@ -49,14 +48,14 @@ class StyleTransfer():
 
         if comixGAN_model is None:
             # load pretrained model
-            comixGAN_model = ComixGAN()
-            comixGAN_model.generator = load_model(settings.COMIX_GAN_MODEL_PATH)
+            comixGAN_model = load_model(settings.COMIX_GAN_MODEL_PATH,
+                                                  custom_objects={'InstanceNormalization': InstanceNormalization})
             cache.set(comixGAN_cache_key, comixGAN_model, None)  # None is the timeout parameter. It means cache forever
 
         frames = cls._resize_images(frames, size=384)
         frames = np.stack(frames)
         frames = frames / 255
-        stylized_imgs = comixGAN_model.generator.predict(frames)
+        stylized_imgs = comixGAN_model.predict(frames)
         return list(255 * stylized_imgs)
 
     @classmethod

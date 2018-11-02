@@ -34,8 +34,8 @@ scikit-learn==0.20.0
 scipy==1.1.0
 six==1.11.0
 sklearn==0.0
-tensorboard==1.11.0
-tensorflow-gpu==1.11.0
+tensorboard==1.10.0
+tensorflow-gpu==1.10.1
 termcolor==1.1.0
 toolz==0.9.0
 torch==0.4.1
