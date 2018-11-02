@@ -11,13 +11,14 @@ from api.exceptions import TooLargeFile
 from comic_layout.comic_layout import LayoutGenerator
 from keyframes.keyframes import KeyFramesExtractor
 from style_transfer.style_transfer import StyleTransfer
-from utils import jj
+from utils import jj, profile
 
 
 class Video(models.Model):
     file = models.FileField(blank=False, null=False, upload_to="raw_videos")
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    @profile
     def download_from_youtube(self, yt_url):
         yt_pafy = pafy.new(yt_url)
 
@@ -34,10 +35,16 @@ class Video(models.Model):
             raise TooLargeFile()
 
     def create_comic(self, frames_mode=0, rl_mode=0):
-        keyframes = KeyFramesExtractor.get_keyframes(video=self, frames_mode=frames_mode, rl_mode=rl_mode)
-        stylized_keyframes = StyleTransfer.get_stylized_frames(frames=keyframes)
-        comic_image = LayoutGenerator.get_layout(frames=stylized_keyframes)
-        return comic_image
+        keyframes, keyframes_extraction_time = KeyFramesExtractor.get_keyframes(video=self,
+                                                                                frames_mode=frames_mode,
+                                                                                rl_mode=rl_mode)
+        stylized_keyframes, stylization_time = StyleTransfer.get_stylized_frames(frames=keyframes)
+        comic_image, layout_generation_time = LayoutGenerator.get_layout(frames=stylized_keyframes)
+
+        timings = {'keyframes_extraction_time': keyframes_extraction_time,
+                   'stylization_time': stylization_time,
+                   'layout_generation_time': layout_generation_time}
+        return comic_image, timings
 
 
 class Comic(models.Model):
@@ -45,6 +52,7 @@ class Comic(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name="comic")
 
     @classmethod
+    @profile
     def create_from_nparray(cls, nparray_file, video):
         if nparray_file.max() <= 1:
             nparray_file = (nparray_file * 255).astype(int)

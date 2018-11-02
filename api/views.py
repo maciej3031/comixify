@@ -19,15 +19,17 @@ class Comixify(APIView):
 
         video_file = serializer.validated_data["file"]
         video = Video.objects.create(file=video_file)
-        comic_image = video.create_comic(
+        comic_image, timings = video.create_comic(
             frames_mode=serializer.validated_data["frames_mode"],
             rl_mode=serializer.validated_data["rl_mode"]
         )
-        comic = Comic.create_from_nparray(comic_image, video)
+        comic, from_nparray_time = Comic.create_from_nparray(comic_image, video)
+        timings['from_nparray_time'] = from_nparray_time
 
         response = {
             "status_message": "ok",
             "comic": comic.file.url,
+            "timings": timings,
         }
         # Remove to spare storage
         video.file.delete()
@@ -46,17 +48,20 @@ class ComixifyFromYoutube(APIView):
         yt_url = serializer.validated_data["url"]
 
         video = Video()
-        video.download_from_youtube(yt_url)
+        _, yt_download_time = video.download_from_youtube(yt_url)
         video.save()
-        comic_image = video.create_comic(
+        comic_image, timings = video.create_comic(
             frames_mode=serializer.validated_data["frames_mode"],
             rl_mode=serializer.validated_data["rl_mode"]
         )
-        comic = Comic.create_from_nparray(comic_image, video)
+        comic, from_nparray_time = Comic.create_from_nparray(comic_image, video)
+        timings['from_nparray_time'] = from_nparray_time
+        timings['yt_download_time'] = yt_download_time
 
         response = {
             "status_message": "ok",
             "comic": comic.file.url,
+            "timings": timings,
         }
         # Remove to spare storage
         video.file.delete()

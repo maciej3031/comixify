@@ -15,7 +15,7 @@ from django.core.cache import cache
 from skimage import img_as_ubyte
 import logging
 
-from utils import jj
+from utils import jj, profile
 from keyframes_rl.models import DSN
 from popularity.models import PopularityPredictor
 from keyframes.kts import cpd_auto
@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 class KeyFramesExtractor:
     @classmethod
+    @profile
     def get_keyframes(cls, video, gpu=settings.GPU, features_batch_size=settings.FEATURE_BATCH_SIZE,
                       frames_mode=0, rl_mode=0):
         frames_paths, all_frames_tmp_dir = cls._get_all_frames(video, mode=frames_mode)
