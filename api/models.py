@@ -51,8 +51,8 @@ class Comic(models.Model):
     file = models.FileField(blank=False, null=False, upload_to="comic")
     video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name="comic")
 
-    @profile
     @classmethod
+    @profile
     def create_from_nparray(cls, nparray_file, video):
         if nparray_file.max() <= 1:
             nparray_file = (nparray_file * 255).astype(int)

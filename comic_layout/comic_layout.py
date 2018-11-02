@@ -5,8 +5,8 @@ from utils import profile
 
 
 class LayoutGenerator():
-    @profile
     @classmethod
+    @profile
     def get_layout(cls, frames):
         result_imgs = cls._pad_images(frames)
 

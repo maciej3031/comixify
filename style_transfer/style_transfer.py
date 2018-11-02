@@ -13,8 +13,8 @@ from utils import profile
 
 
 class StyleTransfer():
-    @profile
     @classmethod
+    @profile
     def get_stylized_frames(cls, frames, method="cartoon_gan", gpu=settings.GPU, **kwargs):
         if method == "cartoon_gan":
             return cls._cartoon_gan_stylize(frames, gpu=gpu, **kwargs)
