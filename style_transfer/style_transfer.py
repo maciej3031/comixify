@@ -11,6 +11,8 @@ from torch.autograd import Variable
 from keras_contrib.layers import InstanceNormalization
 from CartoonGAN.network.Transformer import Transformer
 from utils import profile
+import gc
+from keras import backend as K
 
 
 class StyleTransfer():
@@ -43,14 +45,14 @@ class StyleTransfer():
 
     @classmethod
     def _comix_gan_stylize(cls, frames):
-        # comixGAN_cache_key = 'comixGAN_model_cache'
-        # comixGAN_model = cache.get(comixGAN_cache_key)  # get model from cache
+        comixGAN_cache_key = 'comixGAN_model_cache'
+        comixGAN_model = cache.get(comixGAN_cache_key)  # get model from cache
 
-        # if comixGAN_model is None:
+        if comixGAN_model is None:
             # load pretrained model
-        comixGAN_model = load_model(settings.COMIX_GAN_MODEL_PATH,
-                                    custom_objects={'InstanceNormalization': InstanceNormalization})
-        # cache.set(comixGAN_cache_key, comixGAN_model, None)  # None is the timeout parameter. It means cache forever
+            comixGAN_model = load_model(settings.COMIX_GAN_MODEL_PATH,
+                                        custom_objects={'InstanceNormalization': InstanceNormalization})
+            cache.set(comixGAN_cache_key, comixGAN_model, None)  # None is the timeout parameter. It means cache forever
 
         frames = cls._resize_images(frames, size=450)
         batch_size = 5
@@ -59,7 +61,8 @@ class StyleTransfer():
             batch_of_frames = np.stack(frames[i:i+batch_size]) / 255
             stylized_batch_of_imgs = comixGAN_model.predict(batch_of_frames)
             stylized_imgs.append(255*stylized_batch_of_imgs)
-
+        K.clear_session()
+        gc.collect()
         return list(np.concatenate(stylized_imgs, axis=0))
 
     @classmethod
