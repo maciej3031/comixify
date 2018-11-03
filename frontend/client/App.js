@@ -252,7 +252,7 @@ class App extends React.Component {
                                 checked={styleTransferMode === "0"}
                                 onChange={this.styleTransferChange}
                             />
-                            <label htmlFor="model-0">ComixGAN</label>
+                            <label htmlFor="style-model-0">ComixGAN</label>
                             <input
                                 type="radio"
                                 name="style-model"
@@ -261,7 +261,7 @@ class App extends React.Component {
                                 checked={styleTransferMode === "1"}
                                 onChange={this.styleTransferChange}
                             />
-                            <label htmlFor="model-1">CartoonGAN-Hayao</label>
+                            <label htmlFor="style-model-1">CartoonGAN-Hayao</label>
                             <input
                                 type="radio"
                                 name="style-model"
@@ -270,7 +270,7 @@ class App extends React.Component {
                                 checked={styleTransferMode === "2"}
                                 onChange={this.styleTransferChange}
                             />
-                            <label htmlFor="model-1">CartoonGAN-Hosoda</label>
+                            <label htmlFor="style-model-2">CartoonGAN-Hosoda</label>
                         </div>
                     </div>
 				)}
