@@ -57,7 +57,7 @@ class StyleTransfer():
         comixGAN_model = load_model(settings.COMIX_GAN_MODEL_PATH,
                                     custom_objects={'InstanceNormalization': InstanceNormalization})
         frames = cls._resize_images(frames, size=450)
-        batch_size = 5
+        batch_size = 2
         stylized_imgs = []
         for i in range(0, len(frames), batch_size):
             batch_of_frames = np.stack(frames[i:i + batch_size]) / 255
