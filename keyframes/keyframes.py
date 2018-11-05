@@ -157,8 +157,6 @@ class KeyFramesExtractor:
 
     @staticmethod
     def _get_popularity_chosen_frames(frames, features, image_assessment_mode=0, n_frames=10):
-
-
         model_cache_key = "popularity_model_cache_" + str(image_assessment_mode)
         model = cache.get(model_cache_key)  # get model from cache
 
