@@ -31,13 +31,15 @@ class App extends React.Component {
 			drop_errors: [],
 			result_comics: null,
             framesMode: "0",
-            rlMode: "0"
+            rlMode: "0",
+            imageAssessment: "0"
 		};
 		this.onVideoDrop = this.onVideoDrop.bind(this);
         this.onModelChange = this.onModelChange.bind(this);
         this.handleResponse = this.handleResponse.bind(this);
         this.onYouTubeSubmit = this.onYouTubeSubmit.bind(this);
         this.onSamplingChange = this.onSamplingChange.bind(this);
+        this.onImageAssessmentChange = this.onImageAssessmentChange.bind(this);
 	}
 	static onVideoUploadProgress(progressEvent) {
 		let percentCompleted = Math.round(
@@ -57,6 +59,12 @@ class App extends React.Component {
             framesMode: value
         })
     }
+    onImageAssessmentChange(e) {
+        let value = e.currentTarget.value;
+        this.setState({
+            imageAssessment: value
+        })
+    }
 	handleResponse(res) {
 	    if (res.data["status_message"] === "ok") {
             this.setState({
@@ -70,11 +78,12 @@ class App extends React.Component {
         }
     }
 	processVideo(video) {
-		let { framesMode, rlMode } = this.state
+		let { framesMode, rlMode, imageAssessment } = this.state;
 		let data = new FormData();
 		data.append("file", video);
 		data.set('frames_mode', parseInt(framesMode));
 		data.set('rl_mode', parseInt(rlMode));
+		data.set("image_assessment_mode", parseInt(imageAssessment));
 		post(COMIXIFY_API, data, {
 			headers: { "content-type": "multipart/form-data" },
 			onUploadProgress: App.onVideoUploadProgress
@@ -102,11 +111,12 @@ class App extends React.Component {
 		this.processVideo(files[0]);
 	}
 	submitYouTube(link) {
-	    let { framesMode, rlMode } = this.state;
+	    let { framesMode, rlMode, imageAssessment } = this.state;
 	    post(FROM_YOUTUBE_API, {
 		    url: link,
 			frames_mode: parseInt(framesMode),
-			rl_mode: parseInt(rlMode)
+			rl_mode: parseInt(rlMode),
+			image_assessment_mode: parseInt(imageAssessment)
         })
 			.then(this.handleResponse)
 			.catch(err => {
@@ -132,7 +142,9 @@ class App extends React.Component {
 		});
 	}
 	render() {
-		let { state, drop_errors, result_comics, framesMode, rlMode, videoId } = this.state;
+		let {
+		    state, drop_errors, result_comics, framesMode, rlMode, videoId, imageAssessment
+		} = this.state;
 		let showUsage = [
 			App.appStates.INITIAL,
 			App.appStates.UPLOAD_ERROR,
@@ -199,8 +211,29 @@ class App extends React.Component {
                             />
                             <label htmlFor="model-1">+VTW model</label>
                         </div>
+						<div>
+                            <span>Image assessment:</span>
+                            <input
+                                type="radio"
+                                name="image-assessment"
+                                id="image-assessment-0"
+                                value="0"
+                                checked={imageAssessment === "0"}
+                                onChange={this.onImageAssessmentChange}
+                            />
+							<label htmlFor="image-assessment-0">NIMA</label>
+                            <input
+                                type="radio"
+                                name="image-assessment"
+                                id="image-assessment-1"
+                                value="1"
+                                checked={imageAssessment === "1"}
+                                onChange={this.onImageAssessmentChange}
+                            />
+                            <label htmlFor="image-assessment-1">Popularity</label>
+                        </div>
                     </div>
-                )}
+				)}
 				{showUsage && (
 					<Dropzone
 						onDrop={this.onVideoDrop}
