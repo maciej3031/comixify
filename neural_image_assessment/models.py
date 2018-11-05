@@ -4,6 +4,7 @@ from keras.models import load_model
 from keras.preprocessing.image import load_img, img_to_array
 from keras.applications.nasnet import preprocess_input
 import tensorflow as tf
+from PIL import Image
 
 MODEL_PATH = 'neural_image_assessment/pretrained_model/nima_model.h5'
 
@@ -20,10 +21,31 @@ class NeuralImageAssessment:
             with tf.device('/CPU:0'):
                 self.model = load_model(MODEL_PATH)
 
-    def get_assessment_score(self, image_path):
+    @staticmethod
+    def resize_image(bgr_img_array, target_size=(224, 224), interpolation='nearest'):
+        _PIL_INTERPOLATION_METHODS = {
+            'nearest': Image.NEAREST,
+            'bilinear': Image.BILINEAR,
+            'bicubic': Image.BICUBIC,
+        }
+
+        img = Image.fromarray(np.uint8(bgr_img_array[..., ::-1]))
+        width_height_tuple = (target_size[1], target_size[0])
+        if img.size != width_height_tuple:
+            if interpolation not in _PIL_INTERPOLATION_METHODS:
+                raise ValueError(
+                    'Invalid interpolation method {} specified. Supported '
+                    'methods are {}'.format(
+                        interpolation,
+                        ", ".join(_PIL_INTERPOLATION_METHODS.keys())))
+            resample = _PIL_INTERPOLATION_METHODS[interpolation]
+            img = img.resize(width_height_tuple, resample)
+        return img
+
+    def get_assessment_score(self, img_array):
         with self.session.as_default():
             target_size = (224, 224)
-            img = load_img(image_path, target_size=target_size)
+            img = NeuralImageAssessment.resize_image(img_array, target_size)
             x = img_to_array(img)
             x = np.expand_dims(x, axis=0)
             x = preprocess_input(x)
