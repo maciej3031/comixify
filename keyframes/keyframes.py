@@ -1,6 +1,6 @@
 import os
 import uuid
-
+import shutil
 import numpy as np
 import torch
 import torch.nn as nn
@@ -37,6 +37,7 @@ class KeyFramesExtractor:
         probs = cls._get_probs(norm_features, gpu, mode=rl_mode)
         keyframes = cls._get_keyframes(frames, probs, change_points, frames_per_segment)
         chosen_frames = cls._get_popularity_chosen_frames(keyframes, features)
+        shutil.rmtree(jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}"))
         return chosen_frames
 
     @staticmethod
