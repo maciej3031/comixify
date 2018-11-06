@@ -165,7 +165,7 @@ class KeyFramesExtractor:
                 model = NeuralImageAssessment()
             else:
                 model = PopularityPredictor()
-            cache.set(model_cache_key, model, None)
+                cache.set(model_cache_key, model, None)
 
         for frame in frames:
             if image_assessment_mode == 0:
