@@ -24,6 +24,8 @@ from keyframes.utils import batch
 
 logger = logging.getLogger(__name__)
 
+nima_model = NeuralImageAssessment()
+
 
 class KeyFramesExtractor:
     @classmethod
@@ -157,24 +159,19 @@ class KeyFramesExtractor:
 
     @staticmethod
     def _get_popularity_chosen_frames(frames, features, image_assessment_mode=0, n_frames=10):
-        model_cache_key = "popularity_model_cache_" + str(image_assessment_mode)
-        model = cache.get(model_cache_key)  # get model from cache
-
-        if model is None:
-            if image_assessment_mode == 0:
-                model = NeuralImageAssessment()
-            else:
+        if image_assessment_mode == 1:
+            model_cache_key = "popularity_model_cache"
+            model = cache.get(model_cache_key)  # get model from cache
+            if model is None:
                 model = PopularityPredictor()
                 cache.set(model_cache_key, model, None)
-
-        for frame in frames:
-            if image_assessment_mode == 0:
-                x = frame["frame"]
-                frame["popularity"] = model.get_assessment_score(x)
-            else:
+            for frame in frames:
                 x = features[frame["index"]]
                 frame["popularity"] = model.get_popularity_score(x).squeeze()
-
+        else:
+            for frame in frames:
+                x = frame["frame"]
+                frame["popularity"] = nima_model.get_assessment_score(x)
         chosen_frames = sorted(frames, key=lambda k: k['popularity'], reverse=True)
         chosen_frames = chosen_frames[0:n_frames]
         chosen_frames.sort(key=lambda k: k['index'])
