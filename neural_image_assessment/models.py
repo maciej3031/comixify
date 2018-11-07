@@ -13,11 +13,12 @@ class NeuralImageAssessment:
     def __init__(self):
         if not os.path.exists(MODEL_PATH):
             print("Model file does not exist.")
+        self.graph = tf.Graph()
         config = tf.ConfigProto()
         config.gpu_options.per_process_gpu_memory_fraction = 0.001
         config.gpu_options.allow_growth = True
-        self.session = tf.Session(config=config)
-        with self.session.as_default():
+        self.session = tf.Session(graph=self.graph, config=config)
+        with self.graph.as_default():
             with tf.device('/CPU:0'):
                 self.model = load_model(MODEL_PATH)
 
@@ -43,7 +44,7 @@ class NeuralImageAssessment:
         return img
 
     def get_assessment_score(self, img_array):
-        with self.session.as_default():
+        with self.graph.as_default():
             target_size = (224, 224)
             img = NeuralImageAssessment.resize_image(img_array, target_size)
             x = img_to_array(img)
