@@ -35,7 +35,7 @@ class Video(models.Model):
             raise TooLargeFile()
 
     def create_comic(self, frames_mode=0, rl_mode=0, image_assessment_mode=0):
-        keyframes, keyframes_extraction_time = KeyFramesExtractor.get_keyframes(
+        (keyframes, keyframes_timings), keyframes_extraction_time = KeyFramesExtractor.get_keyframes(
             video=self,
             frames_mode=frames_mode,
             rl_mode=rl_mode,
@@ -44,9 +44,12 @@ class Video(models.Model):
         stylized_keyframes, stylization_time = StyleTransfer.get_stylized_frames(frames=keyframes)
         comic_image, layout_generation_time = LayoutGenerator.get_layout(frames=stylized_keyframes)
 
-        timings = {'keyframes_extraction_time': keyframes_extraction_time,
-                   'stylization_time': stylization_time,
-                   'layout_generation_time': layout_generation_time}
+        timings = {
+            'keyframes_extraction_time': keyframes_extraction_time,
+            'stylization_time': stylization_time,
+            'layout_generation_time': layout_generation_time,
+            **keyframes_timings
+        }
         return comic_image, timings
 
 
