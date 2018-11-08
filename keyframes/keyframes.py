@@ -18,17 +18,20 @@ import logging
 from utils import jj, profile
 from keyframes_rl.models import DSN
 from popularity.models import PopularityPredictor
+from neural_image_assessment.models import NeuralImageAssessment
 from keyframes.kts import cpd_auto
 from keyframes.utils import batch
 
 logger = logging.getLogger(__name__)
+
+nima_model = NeuralImageAssessment()
 
 
 class KeyFramesExtractor:
     @classmethod
     @profile
     def get_keyframes(cls, video, gpu=settings.GPU, features_batch_size=settings.FEATURE_BATCH_SIZE,
-                      frames_mode=0, rl_mode=0):
+                      frames_mode=0, rl_mode=0, image_assessment_mode=0):
         frames_paths, all_frames_tmp_dir = cls._get_all_frames(video, mode=frames_mode)
         frames = cls._get_frames(frames_paths)
         features = cls._get_features(frames, gpu, features_batch_size)
@@ -36,7 +39,7 @@ class KeyFramesExtractor:
         change_points, frames_per_segment = cls._get_segments(norm_features)
         probs = cls._get_probs(norm_features, gpu, mode=rl_mode)
         keyframes = cls._get_keyframes(frames, probs, change_points, frames_per_segment)
-        chosen_frames = cls._get_popularity_chosen_frames(keyframes, features)
+        chosen_frames = cls._get_popularity_chosen_frames(keyframes, features, image_assessment_mode)
         shutil.rmtree(jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}"))
         return chosen_frames
 
@@ -156,18 +159,20 @@ class KeyFramesExtractor:
         return chosen_frames
 
     @staticmethod
-    def _get_popularity_chosen_frames(frames, features, n_frames=10):
-        model_cache_key = "popularity_model_cache"
-        model = cache.get(model_cache_key)  # get model from cache
-
-        if model is None:
-            model = PopularityPredictor()
-            cache.set(model_cache_key, model, None)
-
-        for frame in frames:
-            x = features[frame["index"]]
-            frame["popularity"] = model.get_popularity_score(x).squeeze()
-
+    def _get_popularity_chosen_frames(frames, features, image_assessment_mode=0, n_frames=10):
+        if image_assessment_mode == 1:
+            model_cache_key = "popularity_model_cache"
+            model = cache.get(model_cache_key)  # get model from cache
+            if model is None:
+                model = PopularityPredictor()
+                cache.set(model_cache_key, model, None)
+            for frame in frames:
+                x = features[frame["index"]]
+                frame["popularity"] = model.get_popularity_score(x).squeeze()
+        else:
+            for frame in frames:
+                x = frame["frame"]
+                frame["popularity"] = nima_model.get_assessment_score(x)
         chosen_frames = sorted(frames, key=lambda k: k['popularity'], reverse=True)
         chosen_frames = chosen_frames[0:n_frames]
         chosen_frames.sort(key=lambda k: k['index'])
