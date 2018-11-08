@@ -1,4 +1,5 @@
 import os
+import errno
 import numpy as np
 from keras.models import load_model
 from keras.preprocessing.image import load_img, img_to_array
@@ -12,7 +13,7 @@ MODEL_PATH = 'neural_image_assessment/pretrained_model/nima_model.h5'
 class NeuralImageAssessment:
     def __init__(self):
         if not os.path.exists(MODEL_PATH):
-            print("Model file does not exist.")
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), MODEL_PATH)
         self.graph = tf.Graph()
         config = tf.ConfigProto()
         config.gpu_options.per_process_gpu_memory_fraction = 0.001
