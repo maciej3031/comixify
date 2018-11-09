@@ -45,7 +45,6 @@ class NeuralImageAssessment:
             img = img.resize(width_height_tuple, resample)
         return img
 
-    @profile
     def get_assessment_score(self, img_array):
         with self.graph.as_default():
             target_size = (224, 224)
