@@ -6,6 +6,8 @@ from keras.preprocessing.image import load_img, img_to_array
 from keras.applications.nasnet import preprocess_input
 import tensorflow as tf
 from PIL import Image
+from utils import profile
+
 
 MODEL_PATH = 'neural_image_assessment/pretrained_model/nima_model.h5'
 
@@ -44,6 +46,7 @@ class NeuralImageAssessment:
             img = img.resize(width_height_tuple, resample)
         return img
 
+    @profile
     def get_assessment_score(self, img_array):
         with self.graph.as_default():
             target_size = (224, 224)

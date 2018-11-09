@@ -179,9 +179,13 @@ class KeyFramesExtractor:
                 x = features[frame["index"]]
                 frame["popularity"] = model.get_popularity_score(x).squeeze()
         else:
+            overall_time = 0
             for frame in frames:
                 x = frame["frame"]
-                frame["popularity"] = nima_model.get_assessment_score(x)
+                frame["popularity"], time = nima_model.get_assessment_score(x)
+                overall_time += time
+                print("NIMA frame: "+ str(time))
+            print("NIMA Overall " + str(overall_time))
         chosen_frames = sorted(frames, key=lambda k: k['popularity'], reverse=True)
         chosen_frames = chosen_frames[0:n_frames]
         chosen_frames.sort(key=lambda k: k['index'])
