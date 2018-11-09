@@ -61,7 +61,7 @@ class KeyFramesExtractor:
                   jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "%06d.jpeg")])
         else:
             call(["ffmpeg", "-i", video.file.path, "-vf", "select=not(mod(n\\,15))", "-vsync", "vfr", "-q:v", "2",
-                  jj(settings.TMP_DIR, all_frames_tmp_dir, "%06d.jpeg")])
+                  jj(settings.TMP_DIR, all_frames_tmp_dir, "%06d.bmp")])
         frames_paths = []
         for dirname, dirnames, filenames in os.walk(jj(settings.TMP_DIR, all_frames_tmp_dir)):
             for filename in filenames:
