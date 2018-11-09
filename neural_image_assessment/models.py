@@ -2,11 +2,10 @@ import os
 import errno
 import numpy as np
 from keras.models import load_model
-from keras.preprocessing.image import load_img, img_to_array
+from keras.preprocessing.image import img_to_array
 from keras.applications.nasnet import preprocess_input
 import tensorflow as tf
 from PIL import Image
-from utils import profile
 
 
 MODEL_PATH = 'neural_image_assessment/pretrained_model/nima_model.h5'
