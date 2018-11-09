@@ -18,12 +18,11 @@ class NeuralImageAssessment:
             raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), MODEL_PATH)
         self.graph = tf.Graph()
         config = tf.ConfigProto()
-        config.gpu_options.per_process_gpu_memory_fraction = 0.001
+        config.gpu_options.per_process_gpu_memory_fraction = 0.1
         config.gpu_options.allow_growth = True
         self.session = tf.Session(graph=self.graph, config=config)
         with self.graph.as_default():
-            with tf.device('/CPU:0'):
-                self.model = load_model(MODEL_PATH)
+            self.model = load_model(MODEL_PATH)
 
     @staticmethod
     def resize_image(bgr_img_array, target_size=(224, 224), interpolation='nearest'):
