@@ -17,6 +17,9 @@ class ComixGAN:
         config.gpu_options.allow_growth = True
         self.session = tf.Session(graph=self.graph, config=config)
         with self.graph.as_default():
-            with tf.device('/device:GPU:0'):
-                self.model = load_model(settings.COMIX_GAN_MODEL_PATH,
-                                        custom_objects={'InstanceNormalization': InstanceNormalization})
+            self.session = tf.Session()
+            with self.session.as_default():
+                with tf.device('/device:GPU:0'):
+                    self.model = load_model(settings.COMIX_GAN_MODEL_PATH,
+                                            custom_objects={'InstanceNormalization': InstanceNormalization})
+

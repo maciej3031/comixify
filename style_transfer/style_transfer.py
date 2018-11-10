@@ -52,12 +52,13 @@ class StyleTransfer():
         frames = cls._resize_images(frames, size=450)
 
         with comixGAN.graph.as_default():
-            batch_size = 1
-            stylized_imgs = []
-            for i in range(0, len(frames), batch_size):
-                batch_of_frames = ((np.stack(frames[i:i + batch_size]) / 255) * 2) - 1
-                stylized_batch_of_imgs = comixGAN.model.predict(batch_of_frames)
-                stylized_imgs.append(255 * ((stylized_batch_of_imgs + 1) / 2))
+            with comixGAN.session.as_default():
+                batch_size = 1
+                stylized_imgs = []
+                for i in range(0, len(frames), batch_size):
+                    batch_of_frames = ((np.stack(frames[i:i + batch_size]) / 255) * 2) - 1
+                    stylized_batch_of_imgs = comixGAN.model.predict(batch_of_frames)
+                    stylized_imgs.append(255 * ((stylized_batch_of_imgs + 1) / 2))
         # K.clear_session()
         # gc.collect()
         return list(np.concatenate(stylized_imgs, axis=0))

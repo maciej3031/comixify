@@ -18,7 +18,7 @@ import logging
 from utils import jj, profile
 from keyframes_rl.models import DSN
 from popularity.models import PopularityPredictor
-from neural_image_assessment.models import NeuralImageAssessment
+from neural_image_assessment.model import NeuralImageAssessment
 from keyframes.kts import cpd_auto
 from keyframes.utils import batch
 

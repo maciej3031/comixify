@@ -1,27 +1,28 @@
-import os
 import errno
+import os
+
 import numpy as np
-from keras.models import load_model
-from keras.preprocessing.image import img_to_array
-from keras.applications.nasnet import preprocess_input
 import tensorflow as tf
 from PIL import Image
-
-
-MODEL_PATH = 'neural_image_assessment/pretrained_model/nima_model.h5'
+from keras.applications.nasnet import preprocess_input
+from keras.models import load_model
+from keras.preprocessing.image import img_to_array
+from django.conf import settings
 
 
 class NeuralImageAssessment:
     def __init__(self):
-        if not os.path.exists(MODEL_PATH):
-            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), MODEL_PATH)
+        if not os.path.exists(settings.NIMA_MODEL_PATH):
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), settings.NIMA_MODEL_PATH)
         self.graph = tf.Graph()
         config = tf.ConfigProto()
-        config.gpu_options.per_process_gpu_memory_fraction = 0.1
+        config.gpu_options.per_process_gpu_memory_fraction = 0.2
         config.gpu_options.allow_growth = True
         self.session = tf.Session(graph=self.graph, config=config)
         with self.graph.as_default():
-            self.model = load_model(MODEL_PATH)
+            self.session = tf.Session()
+            with self.session.as_default():
+                self.model = load_model(settings.NIMA_MODEL_PATH)
 
     @staticmethod
     def resize_image(bgr_img_array, target_size=(224, 224), interpolation='nearest'):
@@ -46,13 +47,14 @@ class NeuralImageAssessment:
 
     def get_assessment_score(self, img_array):
         with self.graph.as_default():
-            target_size = (224, 224)
-            img = NeuralImageAssessment.resize_image(img_array, target_size)
-            x = img_to_array(img)
-            x = np.expand_dims(x, axis=0)
-            x = preprocess_input(x)
+            with self.session.as_default():
+                target_size = (224, 224)
+                img = NeuralImageAssessment.resize_image(img_array, target_size)
+                x = img_to_array(img)
+                x = np.expand_dims(x, axis=0)
+                x = preprocess_input(x)
 
-            scores = self.model.predict(x, batch_size=1, verbose=0)[0]
+                scores = self.model.predict(x, batch_size=1, verbose=0)[0]
         mean = NeuralImageAssessment.mean_score(scores)
 
         return mean
