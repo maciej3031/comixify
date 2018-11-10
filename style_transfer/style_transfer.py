@@ -51,7 +51,7 @@ class StyleTransfer():
 
         with comixGAN.graph.as_default():
             with comixGAN.session.as_default():
-                batch_size = 5
+                batch_size = 4
                 stylized_imgs = []
                 for i in range(0, len(frames), batch_size):
                     batch_of_frames = ((np.stack(frames[i:i + batch_size]) / 255) * 2) - 1

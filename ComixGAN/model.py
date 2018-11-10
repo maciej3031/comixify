@@ -13,7 +13,7 @@ class ComixGAN:
             raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), settings.COMIX_GAN_MODEL_PATH)
         self.graph = tf.Graph()
         config = tf.ConfigProto()
-        config.gpu_options.per_process_gpu_memory_fraction = 0.8
+        config.gpu_options.per_process_gpu_memory_fraction = 0.6
         config.gpu_options.allow_growth = True
         self.session = tf.Session(graph=self.graph, config=config)
         with self.graph.as_default():
