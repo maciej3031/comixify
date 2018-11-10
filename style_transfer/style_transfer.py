@@ -20,9 +20,6 @@ class StyleTransfer():
     @classmethod
     @profile
     def get_stylized_frames(cls, frames, style_transfer_mode=0, gpu=settings.GPU):
-        print(frames[0].shape)
-        print(frames[0].max())
-        print(frames[0].min())
         if style_transfer_mode == 0:
             return cls._comix_gan_stylize(frames=frames)
         elif style_transfer_mode == 1:
