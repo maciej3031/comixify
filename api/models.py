@@ -23,7 +23,7 @@ class Video(models.Model):
         yt_pafy = pafy.new(yt_url)
 
         # Use the biggest possible quality with file size < MAX_FILE_SIZE and resolution <= 480px
-        for stream in yt_pafy.videostreams:
+        for stream in reversed(yt_pafy.videostreams):
             if stream.get_filesize() < settings.MAX_FILE_SIZE and int(stream.quality.split("x")[1]) <= 480:
                 tmp_name = uuid.uuid4().hex + ".mp4"
                 relative_path = jj('raw_videos', tmp_name)
