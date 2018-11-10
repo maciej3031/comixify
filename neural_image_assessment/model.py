@@ -20,7 +20,6 @@ class NeuralImageAssessment:
         config.gpu_options.allow_growth = True
         self.session = tf.Session(graph=self.graph, config=config)
         with self.graph.as_default():
-            self.session = tf.Session()
             with self.session.as_default():
                 self.model = load_model(settings.NIMA_MODEL_PATH)
 
