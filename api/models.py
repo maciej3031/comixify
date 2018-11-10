@@ -49,7 +49,7 @@ class Video(models.Model):
             'keyframes_extraction_time': keyframes_extraction_time,
             'stylization_time': stylization_time,
             'layout_generation_time': layout_generation_time,
-            **keyframes_timings
+            'keyframes_extraction_time_details': keyframes_timings
         }
 
         return comic_image, timings
