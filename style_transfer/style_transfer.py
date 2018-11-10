@@ -1,32 +1,28 @@
-import gc
 import os
 
 import cv2
 import numpy as np
-import tensorflow as tf
 import torch
 import torchvision.transforms as transforms
 from django.conf import settings
 from django.core.cache import cache
-from keras import backend as K
-from keras.backend.tensorflow_backend import set_session
-from keras.models import load_model
-from keras_contrib.layers import InstanceNormalization
 from torch.autograd import Variable
 
 from CartoonGAN.network.Transformer import Transformer
+from ComixGAN.model import ComixGAN
 from utils import profile
 
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU
-sess = tf.Session(config=config)
-set_session(sess)  # set this TensorFlow session as the default session for Keras.
+# load pretrained model
+comixGAN = ComixGAN()
 
 
 class StyleTransfer():
     @classmethod
     @profile
     def get_stylized_frames(cls, frames, style_transfer_mode=0, gpu=settings.GPU):
+        print(frames[0].shape)
+        print(frames[0].max())
+        print(frames[0].min())
         if style_transfer_mode == 0:
             return cls._comix_gan_stylize(frames=frames)
         elif style_transfer_mode == 1:
@@ -53,19 +49,17 @@ class StyleTransfer():
 
     @classmethod
     def _comix_gan_stylize(cls, frames):
-        # load pretrained model
-        comixGAN_model = load_model(settings.COMIX_GAN_MODEL_PATH,
-                                    custom_objects={'InstanceNormalization': InstanceNormalization})
         frames = cls._resize_images(frames, size=450)
-        batch_size = 2
-        stylized_imgs = []
-        for i in range(0, len(frames), batch_size):
-            batch_of_frames = np.stack(frames[i:i + batch_size]) / 255
-            stylized_batch_of_imgs = comixGAN_model.predict(batch_of_frames)
-            stylized_imgs.append(255 * stylized_batch_of_imgs)
-        K.clear_session()
-        del comixGAN_model
-        gc.collect()
+
+        with comixGAN.graph.as_default():
+            batch_size = 1
+            stylized_imgs = []
+            for i in range(0, len(frames), batch_size):
+                batch_of_frames = ((np.stack(frames[i:i + batch_size]) / 255) * 2) - 1
+                stylized_batch_of_imgs = comixGAN.model.predict(batch_of_frames)
+                stylized_imgs.append(255 * ((stylized_batch_of_imgs + 1) / 2))
+        # K.clear_session()
+        # gc.collect()
         return list(np.concatenate(stylized_imgs, axis=0))
 
     @classmethod
