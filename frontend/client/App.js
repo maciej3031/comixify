@@ -32,7 +32,8 @@ class App extends React.Component {
 			result_comics: null,
             framesMode: "0",
             rlMode: "0",
-            imageAssessment: "0"
+            imageAssessment: "0",
+			styleTransferMode: "0",
 		};
 		this.onVideoDrop = this.onVideoDrop.bind(this);
         this.onModelChange = this.onModelChange.bind(this);
@@ -40,6 +41,7 @@ class App extends React.Component {
         this.onYouTubeSubmit = this.onYouTubeSubmit.bind(this);
         this.onSamplingChange = this.onSamplingChange.bind(this);
         this.onImageAssessmentChange = this.onImageAssessmentChange.bind(this);
+        this.styleTransferChange = this.styleTransferChange.bind(this);
 	}
 	static onVideoUploadProgress(progressEvent) {
 		let percentCompleted = Math.round(
@@ -51,6 +53,12 @@ class App extends React.Component {
         let value = e.currentTarget.value;
 	    this.setState({
             rlMode: value
+        })
+    }
+	styleTransferChange(e) {
+	    let value = e.currentTarget.value;
+	    this.setState({
+            styleTransferMode: value
         })
     }
 	onSamplingChange(e) {
@@ -78,12 +86,13 @@ class App extends React.Component {
         }
     }
 	processVideo(video) {
-		let { framesMode, rlMode, imageAssessment } = this.state;
+		let { framesMode, rlMode, imageAssessment, styleTransferMode } = this.state;
 		let data = new FormData();
 		data.append("file", video);
 		data.set('frames_mode', parseInt(framesMode));
 		data.set('rl_mode', parseInt(rlMode));
 		data.set("image_assessment_mode", parseInt(imageAssessment));
+		data.set('style_transfer_mode', parseInt(styleTransferMode));
 		post(COMIXIFY_API, data, {
 			headers: { "content-type": "multipart/form-data" },
 			onUploadProgress: App.onVideoUploadProgress
@@ -111,12 +120,13 @@ class App extends React.Component {
 		this.processVideo(files[0]);
 	}
 	submitYouTube(link) {
-	    let { framesMode, rlMode, imageAssessment } = this.state;
+	    let { framesMode, rlMode, imageAssessment, styleTransferMode } = this.state;
 	    post(FROM_YOUTUBE_API, {
 		    url: link,
 			frames_mode: parseInt(framesMode),
 			rl_mode: parseInt(rlMode),
-			image_assessment_mode: parseInt(imageAssessment)
+			image_assessment_mode: parseInt(imageAssessment),
+			style_transfer_mode: parseInt(styleTransferMode)
         })
 			.then(this.handleResponse)
 			.catch(err => {
@@ -143,7 +153,7 @@ class App extends React.Component {
 	}
 	render() {
 		let {
-		    state, drop_errors, result_comics, framesMode, rlMode, videoId, imageAssessment
+		    state, drop_errors, result_comics, framesMode, rlMode, videoId, imageAssessment, styleTransferMode
 		} = this.state;
 		let showUsage = [
 			App.appStates.INITIAL,
@@ -231,6 +241,36 @@ class App extends React.Component {
                                 onChange={this.onImageAssessmentChange}
                             />
                             <label htmlFor="image-assessment-1">Popularity</label>
+						</div>
+                        <div>
+                            <span>Style Transfer model:</span>
+                            <input
+                                type="radio"
+                                name="style-model"
+                                id="style-model-0"
+                                value="0"
+                                checked={styleTransferMode === "0"}
+                                onChange={this.styleTransferChange}
+                            />
+                            <label htmlFor="style-model-0">ComixGAN</label>
+                            <input
+                                type="radio"
+                                name="style-model"
+                                id="style-model-1"
+                                value="1"
+                                checked={styleTransferMode === "1"}
+                                onChange={this.styleTransferChange}
+                            />
+                            <label htmlFor="style-model-1">CartoonGAN-Hayao</label>
+                            <input
+                                type="radio"
+                                name="style-model"
+                                id="style-model-2"
+                                value="2"
+                                checked={styleTransferMode === "2"}
+                                onChange={this.styleTransferChange}
+                            />
+                            <label htmlFor="style-model-2">CartoonGAN-Hosoda</label>
                         </div>
                     </div>
 				)}

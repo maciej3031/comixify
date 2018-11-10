@@ -28,6 +28,6 @@ class LayoutGenerator():
     def _pad_images(frames):
         padded_result_imgs = []
         for img in frames:
-            padded_img = cv2.copyMakeBorder(img, 5, 5, 5, 5, cv2.BORDER_CONSTANT, value=(1, 1, 1))
+            padded_img = cv2.copyMakeBorder(img, 5, 5, 5, 5, cv2.BORDER_CONSTANT, value=(255, 255, 255))
             padded_result_imgs.append(padded_img)
         return padded_result_imgs

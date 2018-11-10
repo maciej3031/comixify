@@ -72,6 +72,10 @@ echo 'export LD_LIBRARY_PATH=/usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
 source ~/.bashrc
 
 
+# CHECK CUDNN VERSION
+cat /usr/include/x86_64-linux-gnu/cudnn_v*.h | grep CUDNN_MAJOR -A 2
+
+
 # INSTALL PACKAGES
 export LC_ALL="en_US.UTF-8"
 export LC_CTYPE="en_US.UTF-8"

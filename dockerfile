@@ -10,10 +10,7 @@ RUN apt-get update && apt-get install -y apt-utils software-properties-common &&
     libsnappy-dev protobuf-compiler \
     python-numpy python-setuptools python-scipy \
     libavformat-dev libswscale-dev unzip && \
-    python3.6 -m pip install --upgrade pip && \
-    python3.6 -m pip install jupyter ipywidgets jupyterlab && \
-    python3.6 -m pip install h5py keras && \
-    python3.6 -m pip install scikit-image opencv-contrib-python pyyaml
+    python3.6 -m pip install --upgrade pip
 
 RUN mkdir /comixify
 COPY ./Makefile.config /comixify/Makefile.config
@@ -45,7 +42,8 @@ RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig && 
 WORKDIR /comixify
 COPY . /comixify
 RUN unzip popularity/pretrained_model/svr_test_11.10.sk.zip -d popularity/pretrained_model/ && \
-    python3.6 -m pip install -r requirements.txt
+    python3.6 -m pip install -r requirements.txt && \
+    python3.6 -m pip install git+https://www.github.com/keras-team/keras-contrib.git
 
 
 # Port to expose

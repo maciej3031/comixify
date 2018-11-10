@@ -145,4 +145,9 @@ FEATURE_BATCH_SIZE = 32
 DEFAULT_FRAMES_SAMPLING_MODE = 0
 DEFAULT_RL_MODE = 0
 DEFAULT_IMAGE_ASSESSMENT_MODE = 0
-DEBUG = True
+
+DEFAULT_STYLE_TRANSFER_MODE = 0
+COMIX_GAN_MODEL_PATH = os.path.join(BASE_DIR, 'ComixGAN', 'pretrained_models', 'generator_model.h5')
+MAX_FRAME_SIZE_FOR_STYLE_TRANSFER = 600
+
+NIMA_MODEL_PATH = os.path.join(BASE_DIR, 'neural_image_assessment', 'pretrained_model', 'nima_model.h5')

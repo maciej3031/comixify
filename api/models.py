@@ -23,7 +23,7 @@ class Video(models.Model):
         yt_pafy = pafy.new(yt_url)
 
         # Use the biggest possible quality with file size < MAX_FILE_SIZE and resolution <= 480px
-        for stream in yt_pafy.videostreams:
+        for stream in reversed(yt_pafy.videostreams):
             if stream.get_filesize() < settings.MAX_FILE_SIZE and int(stream.quality.split("x")[1]) <= 480:
                 tmp_name = uuid.uuid4().hex + ".mp4"
                 relative_path = jj('raw_videos', tmp_name)
@@ -34,22 +34,24 @@ class Video(models.Model):
         else:
             raise TooLargeFile()
 
-    def create_comic(self, frames_mode=0, rl_mode=0, image_assessment_mode=0):
+    def create_comic(self, frames_mode=0, rl_mode=0, image_assessment_mode=0, style_transfer_mode=0):
         (keyframes, keyframes_timings), keyframes_extraction_time = KeyFramesExtractor.get_keyframes(
             video=self,
             frames_mode=frames_mode,
             rl_mode=rl_mode,
             image_assessment_mode=image_assessment_mode
         )
-        stylized_keyframes, stylization_time = StyleTransfer.get_stylized_frames(frames=keyframes)
+        stylized_keyframes, stylization_time = StyleTransfer.get_stylized_frames(frames=keyframes,
+                                                                                 style_transfer_mode=style_transfer_mode)
         comic_image, layout_generation_time = LayoutGenerator.get_layout(frames=stylized_keyframes)
 
         timings = {
             'keyframes_extraction_time': keyframes_extraction_time,
             'stylization_time': stylization_time,
             'layout_generation_time': layout_generation_time,
-            **keyframes_timings
+            'keyframes_extraction_time_details': keyframes_timings
         }
+
         return comic_image, timings
 
 
@@ -61,7 +63,7 @@ class Comic(models.Model):
     @profile
     def create_from_nparray(cls, nparray_file, video):
         if nparray_file.max() <= 1:
-            nparray_file = (nparray_file * 255).astype(int)
+            nparray_file = (nparray_file).astype(int)
         tmp_name = uuid.uuid4().hex + ".png"
         cv2.imwrite(jj(settings.TMP_DIR, tmp_name), nparray_file)
         with open(jj(settings.TMP_DIR, tmp_name), mode="rb") as tmp_file:
