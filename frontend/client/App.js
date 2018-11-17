@@ -328,14 +328,14 @@ class App extends React.Component {
                                 />
                             </div>
                             <div>
-                                <div className="yt-clip-label">Politics</div>
+                                <div className="yt-clip-label">Superhero</div>
                                 <YouTube
-                                    videoId="F2b-2YnfZso"
+                                    videoId="sO5zEIclVw8"
                                     opts={{
                                         height: '90',
                                         width: '150',
                                     }}
-                                    onPlay={this.onSamplePlay.bind(this, "F2b-2YnfZso")}
+                                    onPlay={this.onSamplePlay.bind(this, "sO5zEIclVw8")}
                                 />
 						    </div>
 						</div>
