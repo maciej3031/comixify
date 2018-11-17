@@ -182,9 +182,11 @@ class KeyFramesExtractor:
             for frame in frames:
                 x = frame["frame"]
                 frame["popularity"] = nima_model.get_assessment_score(x)
-        chosen_frames = sorted(frames, key=lambda k: k['popularity'], reverse=True)
-        chosen_frames = chosen_frames[0:n_frames]
-        chosen_frames.sort(key=lambda k: k['index'])
+        chosen_frames = []
+        for frame_0, frame_1 in zip(frames[0::2], frames[1::2]):
+            if frame_0["popularity"] > frame_1["popularity"]:
+                chosen_frames.append(frame_0)
+            chosen_frames.append(frame_1)
         return [o["frame"] for o in chosen_frames]
 
     @staticmethod
