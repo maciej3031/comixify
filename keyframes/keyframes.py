@@ -186,7 +186,8 @@ class KeyFramesExtractor:
         for frame_0, frame_1 in zip(frames[0::2], frames[1::2]):
             if frame_0["popularity"] > frame_1["popularity"]:
                 chosen_frames.append(frame_0)
-            chosen_frames.append(frame_1)
+            else:
+                chosen_frames.append(frame_1)
         return [o["frame"] for o in chosen_frames]
 
     @staticmethod
