@@ -295,47 +295,47 @@ class App extends React.Component {
 						<div className="yt-clips-label">Or select one of sample videos:</div>
 						<div className="youtube-clips">
                             <div>
-                                <div className="yt-clip-label">Documentary</div>
+                                <div className="yt-clip-label">Movie scene</div>
                                 <YouTube
-                                    videoId="gr1ps0ooDhU"
+                                    videoId="pvAhRcUofDk"
                                     opts={{
                                         height: '90',
                                         width: '150',
                                     }}
-                                    onPlay={this.onSamplePlay.bind(this, "gr1ps0ooDhU")}
+                                    onPlay={this.onSamplePlay.bind(this, "pvAhRcUofDk")}
                                 />
                             </div>
                             <div>
-                                <div className="yt-clip-label">Sports</div>
+                                <div className="yt-clip-label">Movie scene</div>
                                 <YouTube
-                                    videoId="MqqyD0nP1LQ"
+                                    videoId="CvvAftMZYKM"
                                     opts={{
                                         height: '90',
                                         width: '150',
                                     }}
-                                    onPlay={this.onSamplePlay.bind(this, "MqqyD0nP1LQ")}
+                                    onPlay={this.onSamplePlay.bind(this, "CvvAftMZYKM")}
                                 />
                             </div>
                             <div>
-                                <div className="yt-clip-label">Music video</div>
+                                <div className="yt-clip-label">Sport</div>
                                 <YouTube
-                                    videoId="kJQP7kiw5Fk"
+                                    videoId="Pi-qitmfvlI"
                                     opts={{
                                         height: '90',
                                         width: '150',
                                     }}
-                                    onPlay={this.onSamplePlay.bind(this, "kJQP7kiw5Fk")}
+                                    onPlay={this.onSamplePlay.bind(this, "Pi-qitmfvlI")}
                                 />
                             </div>
                             <div>
-                                <div className="yt-clip-label">Politics</div>
+                                <div className="yt-clip-label">Superhero</div>
                                 <YouTube
-                                    videoId="F2b-2YnfZso"
+                                    videoId="sO5zEIclVw8"
                                     opts={{
                                         height: '90',
                                         width: '150',
                                     }}
-                                    onPlay={this.onSamplePlay.bind(this, "F2b-2YnfZso")}
+                                    onPlay={this.onSamplePlay.bind(this, "sO5zEIclVw8")}
                                 />
 						    </div>
 						</div>
