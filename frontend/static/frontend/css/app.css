@@ -35,6 +35,10 @@ img {
 	width: 100%;
 }
 
+#demo {
+	overflow: hidden;
+}
+
 .bar-loader {
 	margin: 0 auto;
 }
