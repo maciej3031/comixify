@@ -75,7 +75,8 @@ class Comic(models.Model):
 
     @classmethod
     @profile
-    def create_from_nparray(cls, nparray, video, yt_url, frames_mode, rl_mode, image_assess_mode, style_transfer_mode):
+    def create_from_nparray(cls, nparray, video, yt_url, frames_mode,
+                            rl_mode, image_assessment_mode, style_transfer_mode):
         # if nparray.max() <= 1:
         #     nparray = nparray.astype(int)
         tmp_name = uuid.uuid4().hex + ".png"
@@ -87,7 +88,7 @@ class Comic(models.Model):
                                          yt_url=yt_url,
                                          frames_mode=frames_mode,
                                          rl_mode=rl_mode,
-                                         image_assessment_mode=image_assess_mode,
+                                         image_assessment_mode=image_assessment_mode,
                                          style_transfer_mode=style_transfer_mode)
         os.remove(jj(settings.TMP_DIR, tmp_name))
         return comic
