@@ -1,7 +1,7 @@
 #!/bin/sh
 
 start (){
-    gunicorn --bind :8008 settings.wsgi:application --timeout 300
+    gunicorn --bind :8008 settings.wsgi:application --timeout 300 --workers 2
 }
 
 migrate (){
