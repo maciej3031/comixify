@@ -62,8 +62,16 @@ class StyleTransfer():
 
     @classmethod
     def _cartoon_gan_stylize(cls, frames, gpu=True, style='Hayao'):
-        model_cache_key = 'model_cache'
-        model = cache.get(model_cache_key)  # get model from cache
+        if style == 'Hayao':
+            model_cache_key = 'model_cache_hayao'
+            model = cache.get(model_cache_key)  # get model from cache
+
+        elif style == 'Hosoda':
+            model_cache_key = 'model_cache_hosoda'
+            model = cache.get(model_cache_key)  # get model from cache
+
+        else:
+            raise Exception('No such CartoonGAN model!')
 
         if model is None:
             # load pretrained model

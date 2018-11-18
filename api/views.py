@@ -55,18 +55,18 @@ class ComixifyFromYoutube(APIView):
         image_assessment_mode = serializer.validated_data["image_assessment_mode"]
         style_transfer_mode = serializer.validated_data["style_transfer_mode"]
 
-        comix = Comic.objects.filter(yt_url=yt_url,
-                                     frames_mode=frames_mode,
-                                     rl_mode=rl_mode,
-                                     image_assessment_mode=image_assessment_mode,
-                                     style_transfer_mode=style_transfer_mode
-                                     ).first()
-        if comix is not None:
+        try:
+            comix = Comic.objects.filter(yt_url=yt_url,
+                                         frames_mode=frames_mode,
+                                         rl_mode=rl_mode,
+                                         image_assessment_mode=image_assessment_mode,
+                                         style_transfer_mode=style_transfer_mode
+                                         ).latest('timestamp')
             response = {
                 "status_message": "ok",
                 "comic": comix.file.url,
             }
-        else:
+        except Comic.DoesNotExist:
             video = Video()
             _, yt_download_time = video.download_from_youtube(yt_url)
             video.save()

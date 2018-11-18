@@ -72,13 +72,12 @@ class Comic(models.Model):
     rl_mode = models.PositiveIntegerField(default=0)
     image_assessment_mode = models.PositiveIntegerField(default=0)
     style_transfer_mode = models.PositiveIntegerField(default=0)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     @classmethod
     @profile
     def create_from_nparray(cls, nparray, video, yt_url, frames_mode,
                             rl_mode, image_assessment_mode, style_transfer_mode):
-        # if nparray.max() <= 1:
-        #     nparray = nparray.astype(int)
         tmp_name = uuid.uuid4().hex + ".png"
         cv2.imwrite(jj(settings.TMP_DIR, tmp_name), nparray)
         with open(jj(settings.TMP_DIR, tmp_name), mode="rb") as tmp_file:
