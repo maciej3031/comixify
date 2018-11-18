@@ -16,21 +16,24 @@ class Comixify(APIView):
 
         serializer = VideoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         video_file = serializer.validated_data["file"]
+        frames_mode = serializer.validated_data["frames_mode"]
+        rl_mode = serializer.validated_data["rl_mode"]
+        image_assessment_mode = serializer.validated_data["image_assessment_mode"]
+        style_transfer_mode = serializer.validated_data["style_transfer_mode"]
+
         video = Video.objects.create(file=video_file)
-        comic_image, timings = video.create_comic(
-            frames_mode=serializer.validated_data["frames_mode"],
-            rl_mode=serializer.validated_data["rl_mode"],
-            image_assessment_mode=serializer.validated_data["image_assessment_mode"],
-            style_transfer_mode=serializer.validated_data["style_transfer_mode"],
+        comix, timings = video.create_comix(
+            yt_url='',
+            frames_mode=frames_mode,
+            rl_mode=rl_mode,
+            image_assessment_mode=image_assessment_mode,
+            style_transfer_mode=style_transfer_mode
         )
-        comic, from_nparray_time = Comic.create_from_nparray(comic_image, video)
-        timings['from_nparray_time'] = from_nparray_time
 
         response = {
             "status_message": "ok",
-            "comic": comic.file.url,
+            "comic": comix.file.url,
             "timings": timings,
         }
         # Remove to spare storage
@@ -39,7 +42,6 @@ class Comixify(APIView):
 
 
 class ComixifyFromYoutube(APIView):
-
     def post(self, request):
         """
         Receives video, and returns comic image
@@ -48,25 +50,40 @@ class ComixifyFromYoutube(APIView):
         serializer = YouTubeDownloadSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         yt_url = serializer.validated_data["url"]
+        frames_mode = serializer.validated_data["frames_mode"]
+        rl_mode = serializer.validated_data["rl_mode"]
+        image_assessment_mode = serializer.validated_data["image_assessment_mode"]
+        style_transfer_mode = serializer.validated_data["style_transfer_mode"]
 
-        video = Video()
-        _, yt_download_time = video.download_from_youtube(yt_url)
-        video.save()
-        comic_image, timings = video.create_comic(
-            frames_mode=serializer.validated_data["frames_mode"],
-            rl_mode=serializer.validated_data["rl_mode"],
-            image_assessment_mode=serializer.validated_data["image_assessment_mode"],
-            style_transfer_mode=serializer.validated_data["style_transfer_mode"],
-        )
-        comic, from_nparray_time = Comic.create_from_nparray(comic_image, video)
-        timings['from_nparray_time'] = from_nparray_time
-        timings['yt_download_time'] = yt_download_time
+        try:
+            comix = Comic.objects.filter(yt_url=yt_url,
+                                         frames_mode=frames_mode,
+                                         rl_mode=rl_mode,
+                                         image_assessment_mode=image_assessment_mode,
+                                         style_transfer_mode=style_transfer_mode
+                                         ).latest('timestamp')
+            response = {
+                "status_message": "ok",
+                "comic": comix.file.url,
+            }
+        except Comic.DoesNotExist:
+            video = Video()
+            _, yt_download_time = video.download_from_youtube(yt_url)
+            video.save()
+            comix, timings = video.create_comix(
+                yt_url=yt_url,
+                frames_mode=frames_mode,
+                rl_mode=rl_mode,
+                image_assessment_mode=image_assessment_mode,
+                style_transfer_mode=style_transfer_mode
+            )
 
-        response = {
-            "status_message": "ok",
-            "comic": comic.file.url,
-            "timings": timings,
-        }
-        # Remove to spare storage
-        video.file.delete()
+            timings['yt_download_time'] = yt_download_time
+            response = {
+                "status_message": "ok",
+                "comic": comix.file.url,
+                "timings": timings,
+            }
+            # Remove to spare storage
+            video.file.delete()
         return Response(response)

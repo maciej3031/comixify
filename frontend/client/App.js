@@ -5,12 +5,14 @@ import { post } from "axios";
 import Dropzone from "react-dropzone";
 import { BarLoader } from "react-spinners";
 import { css } from "react-emotion";
+import debounce from "lodash/debounce"
 
 import {
 	COMIXIFY_API,
 	MAX_FILE_SIZE,
 	PERMITTED_VIDEO_EXTENSIONS,
-    FROM_YOUTUBE_API
+    FROM_YOUTUBE_API,
+    MIN_RESPONSE_DELAY
 } from "./constants";
 
 class App extends React.Component {
@@ -37,7 +39,7 @@ class App extends React.Component {
 		};
 		this.onVideoDrop = this.onVideoDrop.bind(this);
         this.onModelChange = this.onModelChange.bind(this);
-        this.handleResponse = this.handleResponse.bind(this);
+        this.handleResponse = debounce(this.handleResponse.bind(this), MIN_RESPONSE_DELAY);
         this.onYouTubeSubmit = this.onYouTubeSubmit.bind(this);
         this.onSamplingChange = this.onSamplingChange.bind(this);
         this.onImageAssessmentChange = this.onImageAssessmentChange.bind(this);
@@ -74,6 +76,9 @@ class App extends React.Component {
         })
     }
 	handleResponse(res) {
+	    if(res === "debounce") {
+	        return
+        }
 	    if (res.data["status_message"] === "ok") {
             this.setState({
                 state: App.appStates.FINISHED,
@@ -93,6 +98,7 @@ class App extends React.Component {
 		data.set('rl_mode', parseInt(rlMode));
 		data.set("image_assessment_mode", parseInt(imageAssessment));
 		data.set('style_transfer_mode', parseInt(styleTransferMode));
+		this.handleResponse("debounce");
 		post(COMIXIFY_API, data, {
 			headers: { "content-type": "multipart/form-data" },
 			onUploadProgress: App.onVideoUploadProgress
@@ -121,6 +127,7 @@ class App extends React.Component {
 	}
 	submitYouTube(link) {
 	    let { framesMode, rlMode, imageAssessment, styleTransferMode } = this.state;
+	    this.handleResponse("debounce");
 	    post(FROM_YOUTUBE_API, {
 		    url: link,
 			frames_mode: parseInt(framesMode),
@@ -317,14 +324,14 @@ class App extends React.Component {
                                 />
                             </div>
                             <div>
-                                <div className="yt-clip-label">Sport</div>
+                                <div className="yt-clip-label">Music</div>
                                 <YouTube
-                                    videoId="Pi-qitmfvlI"
+                                    videoId="Es3Vsfzdr14"
                                     opts={{
                                         height: '90',
                                         width: '150',
                                     }}
-                                    onPlay={this.onSamplePlay.bind(this, "Pi-qitmfvlI")}
+                                    onPlay={this.onSamplePlay.bind(this, "Es3Vsfzdr14")}
                                 />
                             </div>
                             <div>

@@ -16,9 +16,9 @@ class VideoSerializer(serializers.Serializer):
     def validate(self, attrs):
         file = attrs.get("file")
         if file.name.split(".")[-1] not in settings.PERMITTED_VIDEO_EXTENSIONS:
-            raise FileExtensionError
+            raise FileExtensionError()
         if file.size > settings.MAX_FILE_SIZE:
-            raise TooLargeFile
+            raise TooLargeFile()
         return attrs
 
 

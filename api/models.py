@@ -34,7 +34,7 @@ class Video(models.Model):
         else:
             raise TooLargeFile()
 
-    def create_comic(self, frames_mode=0, rl_mode=0, image_assessment_mode=0, style_transfer_mode=0):
+    def create_comix(self, yt_url='', frames_mode=0, rl_mode=0, image_assessment_mode=0, style_transfer_mode=0):
         (keyframes, keyframes_timings), keyframes_extraction_time = KeyFramesExtractor.get_keyframes(
             video=self,
             frames_mode=frames_mode,
@@ -45,29 +45,49 @@ class Video(models.Model):
                                                                                  style_transfer_mode=style_transfer_mode)
         comic_image, layout_generation_time = LayoutGenerator.get_layout(frames=stylized_keyframes)
 
+        comic, from_nparray_time = Comic.create_from_nparray(nparray=comic_image,
+                                                             video=self,
+                                                             yt_url=yt_url,
+                                                             frames_mode=frames_mode,
+                                                             rl_mode=rl_mode,
+                                                             image_assessment_mode=image_assessment_mode,
+                                                             style_transfer_mode=style_transfer_mode)
+
         timings = {
+            'from_nparray_time': from_nparray_time,
             'keyframes_extraction_time': keyframes_extraction_time,
             'stylization_time': stylization_time,
             'layout_generation_time': layout_generation_time,
             'keyframes_extraction_time_details': keyframes_timings
         }
 
-        return comic_image, timings
+        return comic, timings
 
 
 class Comic(models.Model):
     file = models.FileField(blank=False, null=False, upload_to="comic")
     video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name="comic")
+    yt_url = models.URLField(blank=True, null=True)
+    frames_mode = models.PositiveIntegerField(default=0)
+    rl_mode = models.PositiveIntegerField(default=0)
+    image_assessment_mode = models.PositiveIntegerField(default=0)
+    style_transfer_mode = models.PositiveIntegerField(default=0)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     @classmethod
     @profile
-    def create_from_nparray(cls, nparray_file, video):
-        if nparray_file.max() <= 1:
-            nparray_file = (nparray_file).astype(int)
+    def create_from_nparray(cls, nparray, video, yt_url, frames_mode,
+                            rl_mode, image_assessment_mode, style_transfer_mode):
         tmp_name = uuid.uuid4().hex + ".png"
-        cv2.imwrite(jj(settings.TMP_DIR, tmp_name), nparray_file)
+        cv2.imwrite(jj(settings.TMP_DIR, tmp_name), nparray)
         with open(jj(settings.TMP_DIR, tmp_name), mode="rb") as tmp_file:
             comic_image = File(tmp_file, name=tmp_name)
-            comic = Comic.objects.create(file=comic_image, video=video)
+            comic = Comic.objects.create(file=comic_image,
+                                         video=video,
+                                         yt_url=yt_url,
+                                         frames_mode=frames_mode,
+                                         rl_mode=rl_mode,
+                                         image_assessment_mode=image_assessment_mode,
+                                         style_transfer_mode=style_transfer_mode)
         os.remove(jj(settings.TMP_DIR, tmp_name))
         return comic
