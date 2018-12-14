@@ -134,4 +134,10 @@ button:focus {
 		margin-top: 0;
 		border-radius: 0;
 	}
+	.authors {
+		flex-direction: column;
+	}
+	.authors div {
+		margin: 2.5px 0;
+	}
 }
