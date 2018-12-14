@@ -27,7 +27,6 @@ body {
 .authors {
 	display: flex;
 	justify-content: space-between;
-	max-width: 500px;
 	margin: 0 auto;
 }
 
@@ -133,5 +132,12 @@ button:focus {
 	.wrap {
 		margin-top: 0;
 		border-radius: 0;
+	}
+	.authors {
+		flex-direction: column;
+		text-align: center;
+	}
+	.authors div {
+		margin: 2.5px 0;
 	}
 }
