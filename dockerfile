@@ -49,5 +49,13 @@ RUN unzip popularity/pretrained_model/svr_test_11.10.sk.zip -d popularity/pretra
 # Port to expose
 EXPOSE 8008
 
+# Remove tmp and not deleted videos periodically
+RUN touch mycron && \
+    echo "5 0 * * 1 rm /comixify/media/raw_videos/*" >> mycron && \
+    echo "5 0 * * 1 rm -r /comixify/tmp/*" >> mycron && \
+    echo "" >> mycron && \
+    crontab mycron && \
+    rm mycron
+
 ENTRYPOINT ["sh", "entrypoint.sh"]
 CMD ['start']
