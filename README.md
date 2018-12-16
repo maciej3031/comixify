@@ -5,6 +5,6 @@
 - [x] Download videos directly from YouTube
 - [x] Fix model loading to memory
 - [x] Replace ffmpeg with some keyframes extractor
-- [ ] Prepare own ComixGAN
+- [x] Prepare own ComixGAN
 - [ ] Prepare some more intelligent method for comic layout
 - [ ] Prepare some method for voice extraction
