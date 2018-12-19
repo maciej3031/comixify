@@ -1,4 +1,4 @@
-Repository with code for the "Comixify: Transform video into a comics" paper, that can be faound here:
+Repository with code for the "Comixify: Transform video into a comics" paper, that can be found here:
 https://arxiv.org/abs/1812.03473
 
 In this paper, we propose a solution to transform a video into a comics. We approach this task using a
