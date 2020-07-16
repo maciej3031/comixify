@@ -30,7 +30,7 @@
     "babel-preset-stage-0": "^6.3.13",
     "babel-register": "^6.18.0",
     "css-loader": "^0.28.7",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-dropzone": "^5.0.1",
