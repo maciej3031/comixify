@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/maciej3031/comixify#readme",
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "babel": "^6.23.0",
     "babel-core": "^6.7.*",
     "babel-loader": "^7.1.2",
