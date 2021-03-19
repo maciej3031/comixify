@@ -8,7 +8,7 @@ dask==0.20.0
 decorator==4.3.0
 Django==2.0.7
 django-rest-framework==0.1.0
-djangorestframework==3.8.2
+djangorestframework==3.11.2
 gast==0.2.0
 grpcio==1.16.0
 gunicorn==19.9.0
