@@ -33,7 +33,7 @@ pyparsing==2.3.0
 python-dateutil==2.7.5
 pytz==2018.5
 PyWavelets==1.0.1
-PyYAML==3.13
+PyYAML==5.4
 requests==2.20.1
 scikit-image==0.14.1
 scikit-learn==0.20.0
