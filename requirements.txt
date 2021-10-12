@@ -22,7 +22,7 @@ Markdown==3.0.1
 matplotlib==3.0.1
 networkx==2.2
 numpy==1.14.5
-opencv-contrib-python==3.4.3.18
+opencv-contrib-python==4.2.0.32
 opencv-python==3.4.2.17
 pafy==0.5.4
 pandas==0.23.4
