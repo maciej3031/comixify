@@ -4,7 +4,7 @@ certifi==2018.10.15
 chardet==3.0.4
 cloudpickle==0.6.1
 cycler==0.10.0
-dask==0.20.0
+dask==2021.10.0
 decorator==4.3.0
 Django==2.0.7
 django-rest-framework==0.1.0
