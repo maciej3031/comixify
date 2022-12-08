@@ -1,6 +1,6 @@
 absl-py==0.6.1
 astor==0.7.1
-certifi==2018.10.15
+certifi==2022.12.7
 chardet==3.0.4
 cloudpickle==0.6.1
 cycler==0.10.0
